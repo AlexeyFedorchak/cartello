@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ChartTypes\Constants;
+namespace App\Charts\Constants;
 
 class ChartTypes
 {

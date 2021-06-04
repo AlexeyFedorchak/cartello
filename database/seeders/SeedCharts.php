@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\ChartTypes\Constants\ChartTypes as ChartSlugConstants;
-use App\ChartTypes\Models\Chart;
+use App\Charts\Constants\ChartTypes as ChartSlugConstants;
+use App\Charts\Models\Chart;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
