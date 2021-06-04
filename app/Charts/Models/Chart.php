@@ -4,9 +4,9 @@ namespace App\ChartTypes\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ChartType extends Model
+class Chart extends Model
 {
-    protected $table = 'chart_types';
+    protected $table = 'charts';
 
     protected $fillable = [
         'slug',

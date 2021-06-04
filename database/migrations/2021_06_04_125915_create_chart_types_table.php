@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\ChartTypes\Constants\ChartTypes;
 
 class CreateChartTypesTable extends Migration
 {
@@ -13,11 +14,12 @@ class CreateChartTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('chart_types', function (Blueprint $table) {
+        Schema::create('charts', function (Blueprint $table) {
             $table->id();
             $table->string('slug')->unique();
             $table->string('name');
-            $table->string('type')->default('dynamic-chart');
+            $table->string('type')->default(ChartTypes::DYNAMIC_CHART);
+            $table->boolean('has_overview')->default(false);
             $table->timestamps();
         });
     }
