@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class SearchAnalyticsExtract extends Model
 {
+    use CloudAnalytics;
+
     protected $table = 'search_analytics_extract';
 
     /**
@@ -22,7 +24,7 @@ class SearchAnalyticsExtract extends Model
      *
      * @var int
      */
-    protected $perQuery = 1000;
+    protected $perQuery = 5000;
 
     protected $fillable = [
         'domain_id',
@@ -46,13 +48,17 @@ class SearchAnalyticsExtract extends Model
 
         self::truncate();
 
+        $offset = 0;
+
         while(count($searchAnalyticsPureRows) > 0) {
             $searchAnalyticsPureRows = app(IClient::class)
                 ->select($this->bigQueryTable)
                 ->where('where date is not null')
                 ->order('order by date ASC')
-                ->limit($this->perQuery)
+                ->limit($this->perQuery, $offset)
                 ->get();
+
+            $offset += $this->perQuery;
 
             $domains = collect($searchAnalyticsPureRows)
                 ->pluck('domains')

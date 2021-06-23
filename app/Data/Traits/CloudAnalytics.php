@@ -4,8 +4,6 @@ namespace App\Data\Traits;
 
 use App\BigQuery\IClient;
 use App\Data\Models\Domains;
-use App\Data\Models\SearchAnalytics2;
-use App\Data\Models\SearchAnalyticsExtract;
 
 trait CloudAnalytics
 {
@@ -28,14 +26,22 @@ trait CloudAnalytics
         self::where('date', ($lastRow->date ?? null))
             ->delete();
 
+        $offset = 0;
+
         while(count($searchAnalyticsPureRows) > 0) {
+            $lastDate = implode(',',
+                explode('-', ($lastRow->date ?? $this->defaultStartDate))
+            );
+
             $searchAnalyticsPureRows = app(IClient::class)
                 ->select($this->bigQueryTable)
                 ->where('where date <= CURRENT_DATE()')
-                ->where('where date >= ' . ($lastRow->date ?? $this->defaultStartDate))
+                ->where('date >= DATE(' . $lastDate . ')')
                 ->order('order by date ASC')
-                ->limit($this->perQuery)
+                ->limit($this->perQuery, $offset)
                 ->get();
+
+            $offset += $this->perQuery;
 
             $domains = collect($searchAnalyticsPureRows)
                 ->pluck('domains')

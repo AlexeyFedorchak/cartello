@@ -23,7 +23,7 @@ class SearchAnalytics extends Model
      *
      * @var int
      */
-    protected $perQuery = 1000;
+    protected $perQuery = 5000;
 
     protected $fillable = [
         'domain_id',

@@ -5,7 +5,7 @@ namespace App\BigQuery;
 use Google\Cloud\BigQuery\BigQueryClient;
 use Google\Cloud\Core\ExponentialBackoff;
 
-class Client
+class Client implements IClient
 {
     /**
      * @var string
@@ -21,11 +21,6 @@ class Client
      * @var string
      */
     protected $query;
-
-    /**
-     * @var int
-     */
-    protected $startFromIndex = 0;
 
     /**
      * set up dataset and client
@@ -48,7 +43,7 @@ class Client
      * @param string $table
      * @return $this
      */
-    public function select(string $table): self
+    public function select(string $table): IClient
     {
         $this->query = 'SELECT * FROM `' . $this->dataset . '.' . $table .'`';
 
@@ -62,7 +57,7 @@ class Client
      * @param string $condition
      * @return $this
      */
-    public function where(string $where, string $condition = 'AND'): self
+    public function where(string $where, string $condition = 'AND'): IClient
     {
         if (strpos($this->query, 'where') !== false) {
             $this->query .= ' ' . $condition . ' ' . $where;
@@ -79,7 +74,7 @@ class Client
      * @param string $order
      * @return $this
      */
-    public function order(string $order): self
+    public function order(string $order): IClient
     {
         $this->query .= ' ' . $order;
 
@@ -91,24 +86,12 @@ class Client
      * @TODO rewrite it with using chunks
      *
      * @param int $limit
+     * @param int $offset
      * @return $this
      */
-    public function limit(int $limit): self
+    public function limit(int $limit, int $offset = 0): IClient
     {
-        $this->query .= ' limit ' . $limit;
-
-        return $this;
-    }
-
-    /**
-     * set start index
-     *
-     * @param int $startFromIndex
-     * @return $this
-     */
-    public function startFromIndex(int $startFromIndex): self
-    {
-        $this->startFromIndex = $startFromIndex;
+        $this->query .= ' limit ' . $limit . ' offset ' . $offset;
 
         return $this;
     }
@@ -168,11 +151,6 @@ class Client
         $i = 0;
         $data = [];
         foreach ($queryResults as $row) {
-            if ($i < $this->startFromIndex) {
-                $i++;
-                continue;
-            }
-
             foreach ($row as $column => $value)
                 $data[$i][$column] = $value;
 
