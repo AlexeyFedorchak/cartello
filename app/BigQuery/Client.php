@@ -74,6 +74,19 @@ class Client
     }
 
     /**
+     * set sort order in query -> make it simple from our side and move work to big query :)
+     *
+     * @param string $order
+     * @return $this
+     */
+    public function order(string $order): self
+    {
+        $this->query .= ' ' . $order;
+
+        return $this;
+    }
+
+    /**
      * limit | has to be passed in the end
      * @TODO rewrite it with using chunks
      *

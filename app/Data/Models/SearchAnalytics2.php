@@ -5,21 +5,21 @@ namespace App\Data\Models;
 use App\Data\Traits\CloudAnalytics;
 use Illuminate\Database\Eloquent\Model;
 
-class SearchAnalytics extends Model
+class SearchAnalytics2 extends Model
 {
     use CloudAnalytics;
 
-    protected $table = 'search_analytics';
+    protected $table = 'search_analytics_2';
 
     /**
      * big query table name
      *
      * @var string
      */
-    protected $bigQueryTable = 'searchanalytics';
+    protected $bigQueryTable = 'searchanalytics_2';
 
     /**
-     * rows per one select query
+     * rows per one query
      *
      * @var int
      */
