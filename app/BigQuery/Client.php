@@ -43,9 +43,9 @@ class Client implements IClient
      * @param string $table
      * @return $this
      */
-    public function select(string $table): IClient
+    public function select(string $table, array $columns = ['*']): IClient
     {
-        $this->query = 'SELECT * FROM `' . $this->dataset . '.' . $table .'`';
+        $this->query = 'SELECT ' . implode(',', $columns) . ' FROM `' . $this->dataset . '.' . $table .'`';
 
         return $this;
     }
@@ -59,10 +59,12 @@ class Client implements IClient
      */
     public function where(string $where, string $condition = 'AND'): IClient
     {
+        $where = str_replace('where', '', $where);
+
         if (strpos($this->query, 'where') !== false) {
             $this->query .= ' ' . $condition . ' ' . $where;
         } else {
-            $this->query .= ' ' . $where;
+            $this->query .= ' where ' . $where;
         }
 
         return $this;
@@ -74,9 +76,34 @@ class Client implements IClient
      * @param string $order
      * @return $this
      */
-    public function order(string $order): IClient
+    public function orderBy(string $order): IClient
     {
-        $this->query .= ' ' . $order;
+        $order = str_replace(['order', 'by'], '', $order);
+
+        if (strpos($this->query, 'order') !== false) {
+            $this->query .= ', ' . $order;
+        } else {
+            $this->query .= ' order by ' . $order;
+        }
+
+        return $this;
+    }
+
+    /**
+     * group data
+     *
+     * @param string $group
+     * @return IClient
+     */
+    public function groupBy(string $group): IClient
+    {
+        $group = str_replace(['group', 'by'], '', $group);
+
+        if (strpos($this->query, 'group') !== false) {
+            $this->query .= ', ' . $group;
+        } else {
+            $this->query .= ' group by ' . $group;
+        }
 
         return $this;
     }
