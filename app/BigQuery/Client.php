@@ -61,6 +61,9 @@ class Client implements IClient
     {
         $where = str_replace('where', '', $where);
 
+        if (substr($this->query, -1) === '(')
+            $condition = '';
+
         if (strpos($this->query, 'where') !== false) {
             $this->query .= ' ' . $condition . ' ' . $where;
         } else {
@@ -106,6 +109,42 @@ class Client implements IClient
         }
 
         return $this;
+    }
+
+    /**
+     * group some part of conditions
+     *
+     * @param string $condition
+     * @return IClient
+     */
+    public function openGroupCondition(string $condition = 'AND'): IClient
+    {
+        $this->query .= ' ' . $condition . ' (';
+
+        return $this;
+    }
+
+    /**
+     * close grouped condition
+     *
+     * @return IClient
+     */
+    public function closeGroupCondition(): IClient
+    {
+        $this->query .= ')';
+
+        return $this;
+    }
+
+    /**
+     * set raw query
+     *
+     * @param string $query
+     * @return IClient
+     */
+    public function raw(string $query): IClient
+    {
+        $this->query = $query;
     }
 
     /**
