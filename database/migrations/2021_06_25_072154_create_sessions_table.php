@@ -16,12 +16,12 @@ class CreateSessionsTable extends Migration
         Schema::create('sessions', function (Blueprint $table) {
             $table->id();
             $table->string('date');
-            $table->float('brand_clicks');
-            $table->float('brand_impressions');
-            $table->float('non_brand_clicks');
-            $table->float('non_brand_impressions');
-            $table->float('total_clicks');
-            $table->float('total_impressions');
+            $table->float('brand_clicks', 16);
+            $table->float('brand_impressions', 16);
+            $table->float('non_brand_clicks', 16);
+            $table->float('non_brand_impressions', 16, );
+            $table->float('total_clicks', 16);
+            $table->float('total_impressions', 16);
             $table->timestamps();
         });
     }

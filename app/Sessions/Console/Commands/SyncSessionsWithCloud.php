@@ -50,8 +50,6 @@ class SyncSessionsWithCloud extends Command
                 ->select('searchanalytics', ['SUM(clicks) as count_clicks', 'SUM(impressions) as count_impressions'])
                 ->where('date = DATE(' . $date . ')');
 
-
-
             $totalCountsData = $query->get()[0];
 
             $query->openGroupCondition();
