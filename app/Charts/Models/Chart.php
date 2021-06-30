@@ -18,6 +18,7 @@ class Chart extends Model
         'time_frame',
         'period',
         'has_overview',
+        'source_columns',
     ];
 
     /**
