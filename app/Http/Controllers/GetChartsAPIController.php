@@ -7,7 +7,7 @@ use App\Http\Requests\ValidateGetChartsRequest;
 
 class GetChartsAPIController extends Controller
 {
-    public function __invoke(ValidateGetChartsRequest $request)
+    public function get(ValidateGetChartsRequest $request)
     {
         return Chart::all();
     }

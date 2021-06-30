@@ -18,5 +18,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/charts', 'GetChartsAPIController');
-Route::get('/data', 'GetChartDataAPIController');
+Route::get('/charts', [\App\Http\Controllers\GetChartsAPIController::class, 'get'])->name('get.charts');
+Route::get('/data', [\App\Http\Controllers\GetChartDataAPIController::class, 'get'])->name('get.chart.data');

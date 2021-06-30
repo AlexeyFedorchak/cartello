@@ -7,8 +7,10 @@ use App\Http\Requests\ValidateGetChartDataRequest;
 
 class GetChartDataAPIController extends Controller
 {
-    public function __invoke(ValidateGetChartDataRequest $request)
+    public function get(ValidateGetChartDataRequest $request)
     {
-        return Chart::where($request->all())->getData();
+        return Chart::where($request->all())
+            ->first()
+            ->getData();
     }
 }
