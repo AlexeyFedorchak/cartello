@@ -4,6 +4,8 @@ namespace App\Charts\Models;
 
 use App\Charts\Constants\ChartPeriods;
 use App\Charts\Constants\ChartTimeFrames;
+use App\DataGrabbers\DataGrabber;
+use App\DataGrabbers\DynamicChartDataGrabber;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Model;
 
@@ -56,5 +58,38 @@ class Chart extends Model
         }
 
         $this->time_row = array_values(array_unique($dates));
+    }
+
+    /**
+     * get source columns
+     *
+     * @return false|string[]
+     */
+    public function sourceColumns(): array
+    {
+        return explode('|', $this->source_columns);
+    }
+
+    /**
+     * get grabber instance
+     *
+     * @return DynamicChartDataGrabber|null
+     */
+    public function getGrabber(): ?DataGrabber
+    {
+        if ($this->type === 'dynamic-chart')
+            return new DynamicChartDataGrabber($this);
+
+        return null;
+    }
+
+    /**
+     * get data
+     *
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->getGrabber()->rows();
     }
 }

@@ -17,4 +17,24 @@ class Session extends Model
         'total_clicks',
         'total_impressions',
     ];
+
+    /**
+     * get sessions for current year
+     *
+     * @return mixed
+     */
+    public static function currentYear()
+    {
+        return self::where('date', '>=', now()->subYear())->get();
+    }
+
+    /**
+     * get sessions for prev year
+     *
+     * @return mixed
+     */
+    public static function prevYear()
+    {
+        return self::where('date', '<=', now()->subYear())->get();
+    }
 }

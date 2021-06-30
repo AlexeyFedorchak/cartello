@@ -6,5 +6,5 @@ use App\Charts\Models\Chart;
 
 interface DataGrabber
 {
-    public function getRows(Chart $chart): array;
+    public function rows(): array;
 }
