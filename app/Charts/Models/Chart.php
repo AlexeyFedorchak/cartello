@@ -4,6 +4,8 @@ namespace App\Charts\Models;
 
 use App\Charts\Constants\ChartPeriods;
 use App\Charts\Constants\ChartTimeFrames;
+use App\Charts\Constants\ChartTypes;
+use App\DataGrabbers\ChangeTableDataGrabber;
 use App\DataGrabbers\DataGrabber;
 use App\DataGrabbers\DynamicChartDataGrabber;
 use Carbon\CarbonPeriod;
@@ -77,8 +79,11 @@ class Chart extends Model
      */
     public function getGrabber(): ?DataGrabber
     {
-        if ($this->type === 'dynamic-chart')
+        if ($this->type === ChartTypes::DYNAMIC_CHART)
             return new DynamicChartDataGrabber($this);
+
+        if ($this->type === ChartTypes::CHANGE_TABLE)
+            return new ChangeTableDataGrabber($this);
 
         return null;
     }

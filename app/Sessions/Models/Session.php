@@ -39,4 +39,29 @@ class Session extends Model
             ->where('date', '>', now()->subYears(2))
             ->get();
     }
+
+    /**
+     * sub months
+     *
+     * @return mixed
+     */
+    public static function months(int $months = 1)
+    {
+        return self::where('date', '<=', now())
+            ->where('date', '>', now()->subMonths($months))
+            ->get();
+    }
+
+    /**
+     * sub months + year
+     *
+     * @param int $months
+     * @return mixed
+     */
+    public static function prevMonths(int $months)
+    {
+        return self::where('date', '<=', now()->subYear())
+            ->where('date', '>', now()->subMonths($months)->subYear())
+            ->get();
+    }
 }
