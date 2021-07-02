@@ -30,9 +30,12 @@ class DynamicChartDataGrabber implements DataGrabber
      */
     public function rows(): array
     {
+        $currentRow = $this->getRow(Session::currentYear());
+
         return [
-            $this->getRow(Session::prevYear(), $this->chart),
-            $this->getRow(Session::currentYear(), $this->chart),
+            'current' => $currentRow,
+            'previous' => $this->getRow(Session::prevYear()),
+            'overview' => $this->getOverview($currentRow),
         ];
     }
 
@@ -41,20 +44,21 @@ class DynamicChartDataGrabber implements DataGrabber
      *
      * @param Collection $sessions
      * @param Chart $chart
+     * @param array|null $columns
      * @return array
      */
-    private function getRow(Collection $sessions, Chart $chart): array
+    private function getRow(Collection $sessions, ?array $columns = null): array
     {
         $groupedData = [];
 
         foreach ($sessions as $session) {
             $groupNumber = Carbon::parse($session->date)->format('z');
 
-            if ($chart->time_frame === ChartTimeFrames::WEEKLY) {
+            if ($this->chart->time_frame === ChartTimeFrames::WEEKLY) {
                 $groupNumber = Carbon::parse($session->date)->format('W');
             }
 
-            if ($chart->time_frame === ChartTimeFrames::MONTHLY) {
+            if ($this->chart->time_frame === ChartTimeFrames::MONTHLY) {
                 $groupNumber = Carbon::parse($session->date)->format('m');
             }
 
@@ -64,7 +68,10 @@ class DynamicChartDataGrabber implements DataGrabber
 
             $value = 0;
 
-            foreach ($chart->sourceColumns() as $column)
+            if (!$columns)
+                $columns = $this->chart->sourceColumns();
+
+            foreach ($columns as $column)
                 $value += $session->$column;
 
             $groupedData[$groupNumber] += $value;
@@ -87,5 +94,51 @@ class DynamicChartDataGrabber implements DataGrabber
             $row[$time] = $values[$key] ?? null;
 
         return $row;
+    }
+
+    /**
+     * get overview
+     *
+     * @param $row
+     * @return array
+     */
+    private function getOverview($row): array
+    {
+        if (!$this->chart->has_overview)
+            return [];
+
+        $clicks = collect($row)->last();
+        $columns = $this->chart->sourceColumns();
+
+        $hasBrandImpressions = false;
+        $hasNonBrandImpressions = false;
+
+        foreach ($columns as $column) {
+            if (strpos($column, 'non_brand') !== false) {
+                $hasNonBrandImpressions = true;
+                continue;
+            }
+
+            if (strpos($column, 'brand') !== false)
+                $hasBrandImpressions = true;
+        }
+
+        $impressions = null;
+
+        if ($hasBrandImpressions && $hasNonBrandImpressions)
+            $impressions = collect($this->getRow(Session::currentYear(), ['total_impressions']))->last();
+
+        if ($hasBrandImpressions && !$hasNonBrandImpressions)
+            $impressions = collect($this->getRow(Session::currentYear(), ['brand_impressions']))->last();
+
+        if (!$hasBrandImpressions && $hasNonBrandImpressions)
+            $impressions = collect($this->getRow(Session::currentYear(), ['non_brand_impressions']))->last();
+
+        return [
+            'clicks' => $clicks,
+            'clicks_change' => 0,
+            'impressions' => $impressions,
+            'impressions_change' => 0,
+        ];
     }
 }
