@@ -22,6 +22,11 @@ class ChangeTableDataGrabber implements DataGrabber
         $this->chart = $chart;
     }
 
+    /**
+     * get rows related to change table chart
+     *
+     * @return array
+     */
     public function rows(): array
     {
         $currentRowClicks = $this->getRow(Session::months(6));
