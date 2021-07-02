@@ -44,7 +44,6 @@ class DynamicChartDataGrabber implements DataGrabber
      * get row for specific time range for sessions
      *
      * @param Collection $sessions
-     * @param Chart $chart
      * @param array|null $columns
      * @return array
      */
