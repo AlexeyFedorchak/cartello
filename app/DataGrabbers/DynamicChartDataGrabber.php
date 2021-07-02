@@ -62,9 +62,8 @@ class DynamicChartDataGrabber implements DataGrabber
                 $groupNumber = Carbon::parse($session->date)->format('m');
             }
 
-            if (empty($groupedData[$groupNumber])) {
+            if (empty($groupedData[$groupNumber]))
                 $groupedData[$groupNumber] = 0;
-            }
 
             $value = 0;
 

@@ -35,12 +35,20 @@ class ChangeTableDataGrabber implements DataGrabber
         $currentRowImpressions = $this->getRow(Session::months(6), ['non_brand_impressions']);
         $prevRowImpressions = $this->getRow(Session::prevMonths(6), ['non_brand_impressions']);
 
-        return [
-            'non_brand_clicks' => $this->syncWithMonths($currentRowClicks),
-            'non_brand_clicks_change' => $this->syncWithMonths($this->diff($currentRowClicks, $prevRowClicks)),
-            'non_brand_impressions' => $this->syncWithMonths($currentRowImpressions),
-            'non_brand_impressions_change' => $this->syncWithMonths($this->diff($currentRowImpressions, $prevRowImpressions)),
-        ];
+        return $this->syncWithMonths(
+            [
+                $currentRowClicks,
+                $this->diff($currentRowClicks, $prevRowClicks),
+                $currentRowImpressions,
+                $this->diff($currentRowImpressions, $prevRowImpressions)
+            ],
+            [
+                'non_brand_clicks',
+                'non_brand_clicks_change',
+                'non_brand_impressions',
+                'non_brand_impressions_change'
+            ]
+        );
     }
 
     /**
@@ -57,9 +65,8 @@ class ChangeTableDataGrabber implements DataGrabber
         foreach ($sessions as $session) {
             $groupNumber = Carbon::parse($session->date)->format('F');
 
-            if (empty($groupedData[$groupNumber])) {
+            if (empty($groupedData[$groupNumber]))
                 $groupedData[$groupNumber] = 0;
-            }
 
             $value = 0;
 
@@ -87,7 +94,7 @@ class ChangeTableDataGrabber implements DataGrabber
         $diff = [];
 
         foreach ($current as $key => $digit)
-            $diff[] = (($digit - $prev[$key]) / $prev[$key]) * 100;
+            $diff[] = round((($digit - $prev[$key]) / $prev[$key]) * 100, 2);
 
         return $diff;
     }
@@ -95,17 +102,22 @@ class ChangeTableDataGrabber implements DataGrabber
     /**
      * sync with months
      *
-     * @param array $sessions
+     * @param array $data
+     * @param array $mapKeys
      * @return array
      */
-    private function syncWithMonths(array $sessions): array
+    private function syncWithMonths(array $data, array $mapKeys = []): array
     {
-        $sessionsToMonths = [];
+        $trans = [];
+
+        for ($i = 0; $i < count($data[0]); $i++)
+            foreach ($data as $key => $array)
+                $trans[$i][$mapKeys[$key]] = $array[$i];
 
         foreach ($this->getMonths() as $key => $month)
-            $sessionsToMonths[$month] = $sessions[$key];
+            $trans[$key]['month'] = $month;
 
-        return $sessionsToMonths;
+        return $trans;
     }
 
     /**
