@@ -60,7 +60,7 @@ class SeedCharts extends Seeder
         Chart::updateOrCreate([
             'slug' => Str::slug('Non-Brand Sessions: Year to Date - Daily'),
         ], [
-            'name' => 'Non-Brand Sessions: Year to Date - Weekly',
+            'name' => 'Non-Brand Sessions: Year to Date - Daily',
             'type' => ChartSlugConstants::DYNAMIC_CHART,
             'has_overview' => true,
             'source_columns' => 'non_brand_clicks',

@@ -31,11 +31,12 @@ class DynamicChartDataGrabber implements DataGrabber
     public function rows(): array
     {
         $currentRow = $this->getRow(Session::currentYear());
+        $prevRow = $this->getRow(Session::prevYear());
 
         return [
-            'current' => $currentRow,
-            'previous' => $this->getRow(Session::prevYear()),
-            'overview' => $this->getOverview($currentRow),
+            'current' => $this->syncRowWithTime($currentRow),
+            'previous' => $this->syncRowWithTime($prevRow),
+            'overview' => $this->getOverview($currentRow, $prevRow),
         ];
     }
 
@@ -77,7 +78,7 @@ class DynamicChartDataGrabber implements DataGrabber
             $groupedData[$groupNumber] += $value;
         }
 
-        return $this->syncRowWithTime(array_values($groupedData));
+        return array_values($groupedData);
     }
 
     /**
@@ -99,15 +100,18 @@ class DynamicChartDataGrabber implements DataGrabber
     /**
      * get overview
      *
-     * @param $row
+     * @param array $currentRow
+     * @param array $prevRow
      * @return array
      */
-    private function getOverview($row): array
+    private function getOverview(array $currentRow, array $prevRow): array
     {
         if (!$this->chart->has_overview)
             return [];
 
-        $clicks = collect($row)->last();
+        $currentClicks = collect($currentRow)->last();
+        $prevClicks = collect($prevRow)->last();
+
         $columns = $this->chart->sourceColumns();
 
         $hasBrandImpressions = false;
@@ -123,22 +127,29 @@ class DynamicChartDataGrabber implements DataGrabber
                 $hasBrandImpressions = true;
         }
 
-        $impressions = null;
+        $currentImpressions = 0;
+        $prevImpressions = 0;
 
-        if ($hasBrandImpressions && $hasNonBrandImpressions)
-            $impressions = collect($this->getRow(Session::currentYear(), ['total_impressions']))->last();
+        if ($hasBrandImpressions && $hasNonBrandImpressions) {
+            $currentImpressions = collect($this->getRow(Session::currentYear(), ['total_impressions']))->last();
+            $prevImpressions = collect($this->getRow(Session::prevYear(), ['total_impressions']))->last();
+        }
 
-        if ($hasBrandImpressions && !$hasNonBrandImpressions)
-            $impressions = collect($this->getRow(Session::currentYear(), ['brand_impressions']))->last();
+        if ($hasBrandImpressions && !$hasNonBrandImpressions) {
+            $currentImpressions = collect($this->getRow(Session::currentYear(), ['brand_impressions']))->last();
+            $prevImpressions = collect($this->getRow(Session::prevYear(), ['brand_impressions']))->last();
+        }
 
-        if (!$hasBrandImpressions && $hasNonBrandImpressions)
-            $impressions = collect($this->getRow(Session::currentYear(), ['non_brand_impressions']))->last();
+        if (!$hasBrandImpressions && $hasNonBrandImpressions) {
+            $currentImpressions = collect($this->getRow(Session::currentYear(), ['non_brand_impressions']))->last();
+            $prevImpressions = collect($this->getRow(Session::prevYear(), ['non_brand_impressions']))->last();
+        }
 
         return [
-            'clicks' => $clicks,
-            'clicks_change' => 0,
-            'impressions' => $impressions,
-            'impressions_change' => 0,
+            'clicks' => $currentClicks,
+            'clicks_change' =>round((($currentClicks - $prevClicks) / $prevClicks) * 100, 2),
+            'impressions' => $currentImpressions,
+            'impressions_change' => round((($currentImpressions - $prevImpressions) / $prevImpressions) * 100, 2),
         ];
     }
 }

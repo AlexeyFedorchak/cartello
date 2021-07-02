@@ -35,6 +35,8 @@ class Session extends Model
      */
     public static function prevYear()
     {
-        return self::where('date', '<=', now()->subYear())->get();
+        return self::where('date', '<=', now()->subYear())
+            ->where('date', '>', now()->subYears(2))
+            ->get();
     }
 }
