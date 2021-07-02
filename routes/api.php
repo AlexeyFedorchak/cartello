@@ -20,3 +20,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('/charts', [\App\Http\Controllers\GetChartsAPIController::class, 'get'])->name('get.charts');
 Route::get('/data', [\App\Http\Controllers\GetChartDataAPIController::class, 'get'])->name('get.chart.data');
+Route::get('/domains', [\App\Http\Controllers\GetDomainsAPIController::class, 'get'])->name('get.domains');
