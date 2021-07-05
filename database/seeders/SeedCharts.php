@@ -18,8 +18,6 @@ class SeedCharts extends Seeder
      */
     public function run()
     {
-        Chart::truncate();
-
         Chart::updateOrCreate([
             'slug' => Str::slug('Brand+Non-Brand Sessions: Year to Date - Monthly'),
         ], [
