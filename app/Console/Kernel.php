@@ -34,7 +34,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('cache:chart-responses')
             ->withoutOverlapping()
-            ->hourly();
+            ->everyFifteenMinutes();
     }
 
     /**
