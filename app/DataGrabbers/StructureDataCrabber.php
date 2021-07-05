@@ -44,7 +44,10 @@ class StructureDataCrabber implements DataGrabber
         $response = json_encode([
             'count_1_3' => round(($count_1_3 / $total) * 100, 1),
             'count_4_7' => round(($count_4_7 / $total) * 100, 1),
-            'count_8_10' => round(($count_8_10 / $total) * 100, 1)
+            'count_8_10' => round(($count_8_10 / $total) * 100, 1),
+            'count_1_3_numeric' => $count_1_3,
+            'count_4_7_numeric' => $count_4_7,
+            'count_8_10_numeric' => $count_8_10
         ]);
 
         CachedResponses::updateOrCreate(['chart_id' => $this->chart->id], ['response' => $response]);

@@ -34,9 +34,9 @@ class DynamicStructureDataGrabber implements DataGrabber
         $position_8_10 = $this->getRow(8, 10);
 
         $response = json_encode([
-            $this->syncWithTime($position_1_3),
-            $this->syncWithTime($position_4_7),
-            $this->syncWithTime($position_8_10),
+            'position_1_3' => $this->syncWithTime($position_1_3),
+            'position_4_7' => $this->syncWithTime($position_4_7),
+            'position_8_10' => $this->syncWithTime($position_8_10),
         ]);
 
         CachedResponses::updateOrCreate(['chart_id' => $this->chart->id], ['response' => $response]);
@@ -70,12 +70,13 @@ class DynamicStructureDataGrabber implements DataGrabber
      */
     private function syncWithTime(array $rows): array
     {
-        foreach ($rows as $key => $row) {
+        $updatedRow = [];
+        foreach ($rows as $row) {
             $date = Carbon::parse($row['date'])->format('Y-m-d');
 
-            $rows[$date] = $row;
+            $updatedRow[$date] = $row;
         }
 
-        return $rows;
+        return $updatedRow;
     }
 }
