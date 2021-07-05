@@ -2,6 +2,7 @@
 
 namespace App\DataGrabbers;
 
+use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
 use App\Sessions\Models\Session;
 use Carbon\Carbon;
@@ -35,7 +36,7 @@ class ChangeTableDataGrabber implements DataGrabber
         $currentRowImpressions = $this->getRow(Session::months(6), ['non_brand_impressions']);
         $prevRowImpressions = $this->getRow(Session::prevMonths(6), ['non_brand_impressions']);
 
-        return $this->syncWithMonths(
+        $response = json_encode($this->syncWithMonths(
             [
                 $currentRowClicks,
                 $this->diff($currentRowClicks, $prevRowClicks),
@@ -48,7 +49,11 @@ class ChangeTableDataGrabber implements DataGrabber
                 'non_brand_impressions',
                 'non_brand_impressions_change'
             ]
-        );
+        ));
+
+        CachedResponses::updateOrCreate(['chart_id' => $this->chart->id], ['response' => $response]);
+
+        return json_decode($response, true);
     }
 
     /**

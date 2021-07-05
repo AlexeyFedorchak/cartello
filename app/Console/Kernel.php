@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Charts\Console\Commands\CacheChartResponses;
+use App\Charts\Models\CachedResponses;
 use App\Sessions\Console\Commands\SyncSessionsWithCloud;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -15,6 +17,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         SyncSessionsWithCloud::class,
+        CacheChartResponses::class,
     ];
 
     /**

@@ -3,6 +3,7 @@
 namespace App\DataGrabbers;
 
 use App\Charts\Constants\ChartTimeFrames;
+use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
 use App\Sessions\Models\Session;
 use Carbon\Carbon;
@@ -33,11 +34,15 @@ class DynamicChartDataGrabber implements DataGrabber
         $currentRow = $this->getRow(Session::currentYear());
         $prevRow = $this->getRow(Session::prevYear());
 
-        return [
+        $response = json_encode([
             'current' => $this->syncRowWithTime($currentRow),
             'previous' => $this->syncRowWithTime($prevRow),
             'overview' => $this->getOverview($currentRow, $prevRow),
-        ];
+        ]);
+
+        CachedResponses::updateOrCreate(['chart_id' => $this->chart->id], ['response' => $response]);
+
+        return json_decode($response, true);
     }
 
     /**

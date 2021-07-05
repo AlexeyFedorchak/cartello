@@ -13,7 +13,7 @@ class CreateCashedResponsesTable extends Migration
      */
     public function up()
     {
-        Schema::create('cashed_responses', function (Blueprint $table) {
+        Schema::create('cached_responses', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('chart_id');
             $table->longText('response');
@@ -33,6 +33,6 @@ class CreateCashedResponsesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cashed_responses');
+        Schema::dropIfExists('cached_responses');
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CachedResponses extends Model
 {
-    protected $table = 'charts';
+    protected $table = 'cached_responses';
 
     protected $fillable = [
         'chart_id',
