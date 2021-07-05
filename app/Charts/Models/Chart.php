@@ -10,6 +10,7 @@ use App\DataGrabbers\DataGrabber;
 use App\DataGrabbers\DynamicChartDataGrabber;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Chart extends Model
 {
@@ -96,5 +97,15 @@ class Chart extends Model
     public function getData(): array
     {
         return $this->getGrabber()->rows();
+    }
+
+    /**
+     * get related cached responses
+     *
+     * @return HasMany
+     */
+    public function getCachedResponses(): HasMany
+    {
+        return $this->hasMany(CachedResponses::class, 'chart_id', 'id');
     }
 }
