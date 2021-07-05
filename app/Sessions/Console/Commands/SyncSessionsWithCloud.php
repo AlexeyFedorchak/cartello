@@ -34,6 +34,8 @@ class SyncSessionsWithCloud extends Command
      */
     public function handle()
     {
+        shell_exec('export GOOGLE_APPLICATION_CREDENTIALS="/home/forge/edgytech.space/normandy-api-d4370f73211d.json"');
+
         $dates = app(IClient::class)
             ->select('searchanalytics', ['date'])
             ->where('date <= CURRENT_DATE()')
