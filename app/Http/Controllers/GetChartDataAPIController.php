@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Charts\Models\CachedResponses;
+use App\Exceptions\NoCacheFoundForGivenChart;
 use App\Http\Requests\ValidateGetChartDataRequest;
 
 class GetChartDataAPIController extends Controller

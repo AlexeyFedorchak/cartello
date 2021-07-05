@@ -3,6 +3,7 @@
 namespace App\Sessions\Console\Commands;
 
 use App\BigQuery\IClient;
+use App\BigQuery\Traits\BigQueryTimeFormat;
 use App\Sessions\Models\Session;
 use App\Sessions\Traits\BrandSessionsRegex;
 use Carbon\Carbon;
@@ -10,7 +11,7 @@ use Illuminate\Console\Command;
 
 class SyncSessionsWithCloud extends Command
 {
-    use BrandSessionsRegex;
+    use BrandSessionsRegex, BigQueryTimeFormat;
 
     /**
      * The name and signature of the console command.
@@ -72,17 +73,5 @@ class SyncSessionsWithCloud extends Command
 
             $this->info('Processed date: ' . $date);
         }
-    }
-
-    /**
-     * parse date
-     *
-     * @param string $date
-     * @param array|string[] $switch
-     * @return string
-     */
-    private function switchDateString(string $date, array $switch = [',', '-']): string
-    {
-        return implode($switch[0], explode($switch[1], $date));
     }
 }
