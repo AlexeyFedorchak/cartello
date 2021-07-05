@@ -8,6 +8,8 @@ use App\Charts\Constants\ChartTypes;
 use App\DataGrabbers\ChangeTableDataGrabber;
 use App\DataGrabbers\DataGrabber;
 use App\DataGrabbers\DynamicChartDataGrabber;
+use App\DataGrabbers\DynamicStructureDataGrabber;
+use App\DataGrabbers\StructureDataCrabber;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -85,6 +87,12 @@ class Chart extends Model
 
         if ($this->type === ChartTypes::CHANGE_TABLE)
             return new ChangeTableDataGrabber($this);
+
+        if ($this->type === ChartTypes::DYNAMIC_STRUCTURE)
+            return new DynamicStructureDataGrabber($this);
+
+        if ($this->type === ChartTypes::STRUCTURE)
+            return new StructureDataCrabber($this);
 
         return null;
     }

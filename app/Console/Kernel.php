@@ -31,6 +31,10 @@ class Kernel extends ConsoleKernel
          $schedule->command('sessions:sync')
              ->withoutOverlapping()
              ->daily();
+
+        $schedule->command('cache:chart-responses')
+            ->withoutOverlapping()
+            ->hourly();
     }
 
     /**

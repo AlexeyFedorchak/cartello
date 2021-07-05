@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Charts\Constants\ChartPeriods;
 use App\Charts\Constants\ChartTimeFrames;
 use App\Charts\Constants\ChartTypes as ChartSlugConstants;
 use App\Charts\Models\Chart;
@@ -17,6 +18,8 @@ class SeedCharts extends Seeder
      */
     public function run()
     {
+        Chart::truncate();
+
         Chart::updateOrCreate([
             'slug' => Str::slug('Brand+Non-Brand Sessions: Year to Date - Monthly'),
         ], [
@@ -96,6 +99,8 @@ class SeedCharts extends Seeder
         ], [
             'name' => 'Non-Brand Keywords - Last Month (MOM)',
             'type' => ChartSlugConstants::TABLE_STRUCTURE_CHANGE,
+            'time_frame' => ChartTimeFrames::MONTHLY,
+            'period' => ChartPeriods::MONTH,
         ]);
 
         Chart::updateOrCreate([
@@ -103,6 +108,8 @@ class SeedCharts extends Seeder
         ], [
             'name' => 'Non-Brand Keywords - Last Month (YOY)',
             'type' => ChartSlugConstants::TABLE_STRUCTURE_CHANGE,
+            'time_frame' => ChartTimeFrames::MONTHLY,
+            'period' => ChartPeriods::YEAR,
         ]);
     }
 }
