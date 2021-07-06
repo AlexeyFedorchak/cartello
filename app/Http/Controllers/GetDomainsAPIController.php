@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Data\Models\Domains;
+use App\Charts\Models\CachedDomainList;
 use App\Http\Requests\ValidateGetDomainsRequest;
 
 class GetDomainsAPIController extends Controller
 {
     public function get(ValidateGetDomainsRequest $request)
     {
-        return Domains::all();
+        return CachedDomainList::orderBy('clicks', 'DESC')->get();
     }
 }

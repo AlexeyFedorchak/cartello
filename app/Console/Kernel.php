@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Charts\Console\Commands\CacheChartResponses;
+use App\Charts\Console\Commands\CacheDomainList;
 use App\Charts\Models\CachedResponses;
 use App\Sessions\Console\Commands\SyncSessionsWithCloud;
 use Illuminate\Console\Scheduling\Schedule;
@@ -18,6 +19,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         SyncSessionsWithCloud::class,
         CacheChartResponses::class,
+        CacheDomainList::class,
     ];
 
     /**
@@ -35,6 +37,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('cache:chart-responses')
             ->withoutOverlapping()
             ->everyFifteenMinutes();
+
+        $schedule->command('cache:domains')
+            ->withoutOverlapping()
+            ->daily();
     }
 
     /**
