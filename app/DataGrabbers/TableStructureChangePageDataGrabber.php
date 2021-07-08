@@ -97,8 +97,6 @@ class TableStructureChangePageDataGrabber implements DataGrabber
             ], [
                 'response' => json_encode($rows[$domain->domain]),
             ]);
-
-            echo "Done with: " . $domain->domain . "\r\n";
         }
 
         return $rows;
