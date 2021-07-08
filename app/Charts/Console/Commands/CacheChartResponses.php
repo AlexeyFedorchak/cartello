@@ -32,9 +32,11 @@ class CacheChartResponses extends Command
 
         foreach (Chart::all() as $chart) {
             $this->info('Processing chart: ' . $chart->id);
-//            try {
+            try {
                 $chart->getData();
-//            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+                $this->error('Error with processing: ' . $chart->id . ' [' . $e->getMessage() . ']');
+            }
 
             $this->info('Done: ' . $chart->id);
         }
