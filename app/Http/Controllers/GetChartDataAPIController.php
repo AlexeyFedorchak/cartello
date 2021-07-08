@@ -21,10 +21,18 @@ class GetChartDataAPIController extends Controller
         if ($cachedResponses->count() === 0)
             throw new NoCacheFoundForGivenChart();
 
-        return $cachedResponses->map(function ($item) {
-            $item->response = json_decode($item->response, true);
+        $chart = Chart::where('id', $request->id)
+            ->first();
 
-            return $item;
-        });
+        $chart->generateTimeRow();
+
+        return [
+            'row' => $cachedResponses->map(function ($item) {
+                $item->response = json_decode($item->response, true);
+
+                return $item;
+            }),
+            'time_row' => $chart->time_row,
+        ];
     }
 }
