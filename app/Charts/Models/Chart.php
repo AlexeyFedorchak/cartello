@@ -11,6 +11,7 @@ use App\DataGrabbers\DataGrabber;
 use App\DataGrabbers\DynamicChartDataGrabber;
 use App\DataGrabbers\DynamicChartDataGrabberV2;
 use App\DataGrabbers\DynamicStructureDataGrabber;
+use App\DataGrabbers\DynamicStructureDataGrabberV2;
 use App\DataGrabbers\StructureDataCrabber;
 use App\DataGrabbers\TableStructureChangeDataGrabber;
 use Carbon\CarbonPeriod;
@@ -92,7 +93,7 @@ class Chart extends Model
             return new ChangeTableDataGrabberV2($this);
 
         if ($this->type === ChartTypes::DYNAMIC_STRUCTURE)
-            return new DynamicStructureDataGrabber($this);
+            return new DynamicStructureDataGrabberV2($this);
 
         if ($this->type === ChartTypes::STRUCTURE)
             return new StructureDataCrabber($this);
