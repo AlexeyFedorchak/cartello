@@ -31,15 +31,15 @@ class StructureDataCrabber implements DataGrabber
         $rows = [];
 
         foreach (CachedDomainList::all() as $domain) {
-            $count_1_3 = collect($this->getRow())
+            $count_1_3 = collect($this->getRow($domain->domain))
                 ->pluck('count_clicks')
                 ->sum();
 
-            $count_4_7 = collect($this->getRow(4, 7))
+            $count_4_7 = collect($this->getRow($domain->domain, 4, 7))
                 ->pluck('count_clicks')
                 ->sum();
 
-            $count_8_10 = collect($this->getRow(8, 10))
+            $count_8_10 = collect($this->getRow($domain->domain, 8, 10))
                 ->pluck('count_clicks')
                 ->sum();
 
@@ -72,15 +72,17 @@ class StructureDataCrabber implements DataGrabber
      *
      * @param int $lowPosition
      * @param int $highPosition
+     * @param string $domain
      * @return mixed
      */
-    private function getRow(int $lowPosition = 1, int $highPosition = 3): array
+    private function getRow(string $domain, int $lowPosition = 1, int $highPosition = 3): array
     {
         return app(IClient::class)
             ->select('searchanalytics', ['SUM(clicks) as count_clicks'])
             ->where('position >= ' . $lowPosition)
             ->where('position <= ' . $highPosition)
             ->where('date <= CURRENT_DATE()')
+            ->where('domain = "' . $domain . '"')
             ->groupBy('date')
             ->get();
     }
