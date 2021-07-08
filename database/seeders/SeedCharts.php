@@ -109,5 +109,38 @@ class SeedCharts extends Seeder
             'time_frame' => ChartTimeFrames::MONTHLY,
             'period' => ChartPeriods::YEAR,
         ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Non-Brand Keywords  - Google Page 1 to 4+  Distribution - pages'),
+        ], [
+            'name' => 'Non-Brand Keywords - Last Month (YOY)',
+            'type' => ChartSlugConstants::DYNAMIC_STRUCTURE_PAGE,
+            'source_columns' => 'non_brand_clicks',
+        ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Non-Brand Keywords  - Google Page 1 to 4+  Distribution pages-struct'),
+        ], [
+            'name' => 'Non-Brand Keywords - Google First Page Distribution (Year)',
+            'type' => ChartSlugConstants::STRUCTURE_PAGE,
+        ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Non-Brand Keywords - Last Month (MOM) - pages'),
+        ], [
+            'name' => 'Non-Brand Keywords - Last Month (MOM)',
+            'type' => ChartSlugConstants::TABLE_STRUCTURE_CHANGE_PAGE,
+            'time_frame' => ChartTimeFrames::MONTHLY,
+            'period' => ChartPeriods::MONTH,
+        ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Non-Brand Keywords - Last Month (YOY) - pages'),
+        ], [
+            'name' => 'Non-Brand Keywords - Last Month (YOY)',
+            'type' => ChartSlugConstants::TABLE_STRUCTURE_CHANGE_PAGE,
+            'time_frame' => ChartTimeFrames::MONTHLY,
+            'period' => ChartPeriods::YEAR,
+        ]);
     }
 }
