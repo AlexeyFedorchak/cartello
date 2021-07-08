@@ -49,8 +49,6 @@ class DynamicStructureDataGrabberV2 implements DataGrabber
             ], [
                 'response' => json_encode($rows[$domain->domain]),
             ]);
-
-            echo "Processed: " . $domain->domain . "\r\n";
         }
 
         return $rows;
