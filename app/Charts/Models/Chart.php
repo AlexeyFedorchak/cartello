@@ -11,9 +11,12 @@ use App\DataGrabbers\DataGrabber;
 use App\DataGrabbers\DynamicChartDataGrabber;
 use App\DataGrabbers\DynamicChartDataGrabberV2;
 use App\DataGrabbers\DynamicStructureDataGrabber;
+use App\DataGrabbers\DynamicStructureDataGrabberPages;
 use App\DataGrabbers\DynamicStructureDataGrabberV2;
 use App\DataGrabbers\StructureDataCrabber;
+use App\DataGrabbers\StructurePageDataGrabber;
 use App\DataGrabbers\TableStructureChangeDataGrabber;
+use App\DataGrabbers\TableStructureChangePageDataGrabber;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -100,6 +103,15 @@ class Chart extends Model
 
         if ($this->type === ChartTypes::TABLE_STRUCTURE_CHANGE)
             return new TableStructureChangeDataGrabber($this);
+
+        if ($this->type === ChartTypes::TABLE_STRUCTURE_CHANGE_PAGE)
+            return new TableStructureChangePageDataGrabber($this);
+
+        if ($this->type === ChartTypes::STRUCTURE_PAGE)
+            return new StructurePageDataGrabber($this);
+
+        if ($this->type === ChartTypes::DYNAMIC_STRUCTURE_PAGE)
+            return new DynamicStructureDataGrabberPages($this);
 
         return null;
     }
