@@ -12,6 +12,7 @@ class CachedResponses extends Model
     protected $fillable = [
         'chart_id',
         'response',
+        'domain',
     ];
 
     /**
