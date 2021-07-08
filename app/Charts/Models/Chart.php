@@ -6,6 +6,7 @@ use App\Charts\Constants\ChartPeriods;
 use App\Charts\Constants\ChartTimeFrames;
 use App\Charts\Constants\ChartTypes;
 use App\DataGrabbers\ChangeTableDataGrabber;
+use App\DataGrabbers\ChangeTableDataGrabberV2;
 use App\DataGrabbers\DataGrabber;
 use App\DataGrabbers\DynamicChartDataGrabber;
 use App\DataGrabbers\DynamicChartDataGrabberV2;
@@ -88,7 +89,7 @@ class Chart extends Model
             return new DynamicChartDataGrabberV2($this);
 
         if ($this->type === ChartTypes::CHANGE_TABLE)
-            return new ChangeTableDataGrabber($this);
+            return new ChangeTableDataGrabberV2($this);
 
         if ($this->type === ChartTypes::DYNAMIC_STRUCTURE)
             return new DynamicStructureDataGrabber($this);
