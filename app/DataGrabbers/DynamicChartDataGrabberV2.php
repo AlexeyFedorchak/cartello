@@ -93,7 +93,11 @@ class DynamicChartDataGrabberV2 implements DataGrabber
      */
     private function getYearSessionsForPeriod(Carbon $start, Carbon $end): array
     {
-        $period = strtoupper(str_replace('ly', '', $this->chart->time_frame));
+        $period = str_replace('monthly', 'month', $this->chart->time_frame);
+        $period = str_replace('weekly', 'week', $period);
+        $period = str_replace('daily', 'day', $period);
+        $period = strtoupper($period);
+
         $currentYearSessions = [];
 
         if ($this->chart->source_columns === 'brand_clicks|non_brand_clicks')
