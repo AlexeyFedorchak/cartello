@@ -31,9 +31,12 @@ class CacheChartResponses extends Command
         shell_exec('export GOOGLE_APPLICATION_CREDENTIALS="/home/forge/edgytech.space/normandy-api-d4370f73211d.json"');
 
         foreach (Chart::all() as $chart) {
-            try {
+            $this->info('Processing chart: ' . $chart->id);
+//            try {
                 $chart->getData();
-            } catch (\Throwable $e) {}
+//            } catch (\Throwable $e) {}
+
+            $this->info('Done: ' . $chart->id);
         }
     }
 }

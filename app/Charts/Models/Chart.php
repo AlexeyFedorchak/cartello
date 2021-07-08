@@ -8,6 +8,7 @@ use App\Charts\Constants\ChartTypes;
 use App\DataGrabbers\ChangeTableDataGrabber;
 use App\DataGrabbers\DataGrabber;
 use App\DataGrabbers\DynamicChartDataGrabber;
+use App\DataGrabbers\DynamicChartDataGrabberV2;
 use App\DataGrabbers\DynamicStructureDataGrabber;
 use App\DataGrabbers\StructureDataCrabber;
 use App\DataGrabbers\TableStructureChangeDataGrabber;
@@ -84,7 +85,7 @@ class Chart extends Model
     public function getGrabber(): ?DataGrabber
     {
         if ($this->type === ChartTypes::DYNAMIC_CHART)
-            return new DynamicChartDataGrabber($this);
+            return new DynamicChartDataGrabberV2($this);
 
         if ($this->type === ChartTypes::CHANGE_TABLE)
             return new ChangeTableDataGrabber($this);
