@@ -12,4 +12,5 @@ class ChartTypes
     const TABLE_STRUCTURE_CHANGE = 'table-structure-change';
     const TABLE_STRUCTURE_CHANGE_PAGE = 'table-structure-change-page';
     const DYNAMIC_STRUCTURE_PAGE = 'dynamic-structure-change-page';
+    const OPPORTUNITY_TABLE = 'opportunity-table';
 }

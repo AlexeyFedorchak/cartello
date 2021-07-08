@@ -13,6 +13,7 @@ use App\DataGrabbers\DynamicChartDataGrabberV2;
 use App\DataGrabbers\DynamicStructureDataGrabber;
 use App\DataGrabbers\DynamicStructureDataGrabberPages;
 use App\DataGrabbers\DynamicStructureDataGrabberV2;
+use App\DataGrabbers\OpportunityTableDataGrabber;
 use App\DataGrabbers\StructureDataCrabber;
 use App\DataGrabbers\StructurePageDataGrabber;
 use App\DataGrabbers\TableStructureChangeDataGrabber;
@@ -112,6 +113,9 @@ class Chart extends Model
 
         if ($this->type === ChartTypes::DYNAMIC_STRUCTURE_PAGE)
             return new DynamicStructureDataGrabberPages($this);
+
+        if ($this->type === ChartTypes::OPPORTUNITY_TABLE)
+            return new OpportunityTableDataGrabber($this);
 
         return null;
     }

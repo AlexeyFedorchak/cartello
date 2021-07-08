@@ -142,5 +142,21 @@ class SeedCharts extends Seeder
             'time_frame' => ChartTimeFrames::MONTHLY,
             'period' => ChartPeriods::YEAR,
         ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Non-brand opportunities - Page 1'),
+        ], [
+            'name' => 'Non-brand opportunities - Page 1',
+            'type' => ChartSlugConstants::OPPORTUNITY_TABLE,
+            'source_columns' => 'page-1'
+        ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Non-brand opportunities - Page 2'),
+        ], [
+            'name' => 'Non-brand opportunities - Page 2',
+            'type' => ChartSlugConstants::OPPORTUNITY_TABLE,
+            'source_columns' => 'page-2'
+        ]);
     }
 }
