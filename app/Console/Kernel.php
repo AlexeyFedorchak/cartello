@@ -36,7 +36,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('cache:chart-responses')
             ->withoutOverlapping()
-            ->everyFifteenMinutes();
+            ->daily();
 
         $schedule->command('cache:domains')
             ->withoutOverlapping()
