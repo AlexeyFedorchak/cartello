@@ -6,8 +6,6 @@ use App\BigQuery\IClient;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 
 class DynamicStructureDataGrabberV2 implements DataGrabber
 {

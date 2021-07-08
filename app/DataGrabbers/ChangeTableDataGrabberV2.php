@@ -7,11 +7,8 @@ use App\BigQuery\Traits\BigQueryTimeFormat;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
-use App\Sessions\Models\Session;
 use App\Sessions\Traits\BrandSessionsRegex;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
-use Illuminate\Database\Eloquent\Collection;
 
 class ChangeTableDataGrabberV2 implements DataGrabber
 {

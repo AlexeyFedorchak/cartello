@@ -4,15 +4,11 @@ namespace App\DataGrabbers;
 
 use App\BigQuery\IClient;
 use App\BigQuery\Traits\BigQueryTimeFormat;
-use App\Charts\Constants\ChartPeriods;
-use App\Charts\Constants\ChartTimeFrames;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
-use App\Sessions\Models\Session;
 use App\Sessions\Traits\BrandSessionsRegex;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 
 class DynamicChartDataGrabberV2 implements DataGrabber
 {
