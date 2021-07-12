@@ -7,6 +7,7 @@ use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
 use App\Exceptions\NoCacheFoundForGivenChart;
 use App\Http\Requests\ValidateGetChartDataRequest;
+use Carbon\CarbonPeriod;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Redis;
 
@@ -159,6 +160,12 @@ class GetChartDataAPIController extends Controller
         return $data;
     }
 
+    /**
+     * get computed data for change table
+     *
+     * @param array $cachedResponses
+     * @return array
+     */
     private function getComputedDataForChangeTable(array $cachedResponses): array
     {
         $data = [];
@@ -196,6 +203,14 @@ class GetChartDataAPIController extends Controller
             $data[$i]['change_impressions'] =
                 round(($data[$i]['current_impressions'] - $data[$i]['prev_impressions']) / $data[$i]['prev_impressions'], 2) * 100;
         }
+
+        $periods = CarbonPeriod::create(now()->subMonths(6), now());
+
+        $timeRow = [];
+        foreach ($periods as $period)
+            $timeRow[] = $period->format('M');
+
+        $data['time_row'] = $timeRow;
 
         return $data;
     }
