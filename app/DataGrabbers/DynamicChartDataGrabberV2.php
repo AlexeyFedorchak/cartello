@@ -66,25 +66,11 @@ class DynamicChartDataGrabberV2 implements DataGrabber
         return $rows;
     }
 
-    private function subInts(array $list1, array $list2)
-    {
-        $list = [];
-
-        foreach ($list1 as $x => $item) {
-            foreach ($item as $key => $value) {
-                if (!is_numeric($value)) {
-                    $list[$x][$key] = $value;
-                    continue;
-                }
-
-                $list[$x][$key] = $value - $list2[$x][$key];
-            }
-        }
-
-        return $list;
-    }
-
     /**
+     * get year session for given period
+     *
+     * @param Carbon $start
+     * @param Carbon $end
      * @return array
      */
     private function getYearSessionsForPeriod(Carbon $start, Carbon $end): array
@@ -100,38 +86,61 @@ class DynamicChartDataGrabberV2 implements DataGrabber
             $currentYearSessions = $this->getSessions(
                 $start,
                 $end,
-                $period,
-                false
+                $period
             );
 
         if ($this->chart->source_columns === 'brand_clicks')
             $currentYearSessions = $this->getSessions(
                 $start,
                 $end,
-                $period
+                $period,
+                true
             );
 
         if ($this->chart->source_columns === 'non_brand_clicks') {
-            $currentYearBrandSessions = $this->getSessions(
+            $currentYearSessionsALL = $this->getSessions(
                 $start,
                 $end,
                 $period
             );
 
-            $currentYearSessions = $this->getSessions(
+            $currentYearSessionsBranded = $this->getSessions(
                 $start,
                 $end,
                 $period,
-                false,
+                true
             );
 
-            $currentYearSessions = $this->subInts($currentYearSessions, $currentYearBrandSessions);
+            $currentYearSessions = [];
+
+            foreach ($currentYearSessionsALL as $domain => $session) {
+                foreach ($session as $i => $node) {
+                    foreach ($node as $j => $value) {
+                        if (!is_numeric($value)) {
+                            $currentYearSessions[$domain][$i][$j] = $value;
+                            continue;
+                        }
+
+                        $currentYearSessions[$domain][$i][$j] =
+                            $value - $currentYearSessionsBranded[$domain][$i][$j];
+                    }
+                }
+            }
         }
 
         return $currentYearSessions;
     }
 
-    public function getSessions(Carbon $startDate, Carbon $endDate, string $period, bool $isBrand = true)
+    /**
+     * get session data
+     *
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @param string $period
+     * @param int $useBrand
+     * @return array
+     */
+    private function getSessions(Carbon $startDate, Carbon $endDate, string $period, bool $isBrand = false): array
     {
         $startDate = $this->switchDateString($startDate->format('Y-m-d'));
         $endDate = $this->switchDateString($endDate->format('Y-m-d'));
@@ -167,7 +176,14 @@ class DynamicChartDataGrabberV2 implements DataGrabber
         return $data;
     }
 
-    private function overview(Carbon $startDate, Carbon $endDate)
+    /**
+     * get overview
+     *
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @return array
+     */
+    private function overview(Carbon $startDate, Carbon $endDate): array
     {
         $startDate = $this->switchDateString($startDate->format('Y-m-d'));
         $endDate = $this->switchDateString($endDate->format('Y-m-d'));
