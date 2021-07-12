@@ -204,14 +204,6 @@ class GetChartDataAPIController extends Controller
                 round(($data[$i]['current_impressions'] - $data[$i]['prev_impressions']) / $data[$i]['prev_impressions'], 2) * 100;
         }
 
-        $periods = CarbonPeriod::create(now()->subMonths(6), now());
-
-        $timeRow = [];
-        foreach ($periods as $period)
-            $timeRow[] = $period->format('M');
-
-        $data['time_row'] = array_unique($timeRow);
-
         return $data;
     }
 }
