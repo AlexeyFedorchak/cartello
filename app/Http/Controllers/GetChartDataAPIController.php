@@ -210,7 +210,7 @@ class GetChartDataAPIController extends Controller
         foreach ($periods as $period)
             $timeRow[] = $period->format('M');
 
-        $data['time_row'] = $timeRow;
+        $data['time_row'] = array_unique($timeRow);
 
         return $data;
     }

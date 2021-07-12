@@ -121,7 +121,8 @@ class DynamicChartDataGrabberV2 implements DataGrabber
             $currentYearSessions = $this->getSessions(
                 $start,
                 $end,
-                $period
+                $period,
+                false,
             );
 
             $currentYearSessions = $this->subInts($currentYearSessions, $currentYearBrandSessions);
