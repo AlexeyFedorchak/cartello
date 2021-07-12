@@ -29,14 +29,10 @@ class GetChartDataAPIController extends Controller
         $cachedResponses = $this->getResponsesOrFail($request);
         $chart = $this->getChartWithTimeRow($request);
 
-        if (in_array($chart->type, [
-            ChartTypes::DYNAMIC_CHART,
-            ChartTypes::CHANGE_TABLE,
-            ChartTypes::DYNAMIC_STRUCTURE,
-            ChartTypes::TABLE_STRUCTURE_CHANGE,
-            ChartTypes::TABLE_STRUCTURE_CHANGE_PAGE,
-        ])) {
-            $data = $this->getComputedData($cachedResponses);
+        if ($chart->type === ChartTypes::DYNAMIC_CHART) {
+            $data = $this->getComputedDataForDynamicChart($cachedResponses);
+        } elseif ($chart->type === ChartTypes::CHANGE_TABLE) {
+            $data = $this->getComputedDataForChangeTable($cachedResponses);
         } else {
             $data = $cachedResponses;
         }
@@ -117,7 +113,7 @@ class GetChartDataAPIController extends Controller
      * @param array $cachedResponses
      * @return array[]
      */
-    private function getComputedData(array $cachedResponses): array
+    private function getComputedDataForDynamicChart(array $cachedResponses): array
     {
         $data = [
             'current' => [],
@@ -132,7 +128,7 @@ class GetChartDataAPIController extends Controller
                 if (empty($data['current'][$dayN]))
                     $data['current'][$dayN] = 0;
 
-                $data['current'][$dayN] += $current['count_clicks'];
+                $data['current'][$dayN]['count_clicks'] += $current['count_clicks'];
 
                 $currentCountImpressions += $current['count_impressions'];
             }
@@ -141,7 +137,7 @@ class GetChartDataAPIController extends Controller
                 if (empty($data['previous'][$dayN]))
                     $data['previous'][$dayN] = 0;
 
-                $data['previous'][$dayN] += $previous['count_clicks'];
+                $data['previous'][$dayN]['count_clicks'] += $previous['count_clicks'];
 
                 $prevCountImpressions += $previous['count_impressions'];
             }
@@ -159,6 +155,47 @@ class GetChartDataAPIController extends Controller
             'prev_count_impressions' => $prevCountImpressions,
             'change_impressions' => round((($currentCountImpressions - $prevCountImpressions) / $prevCountImpressions) * 100, 2),
         ];
+
+        return $data;
+    }
+
+    private function getComputedDataForChangeTable(array $cachedResponses): array
+    {
+        $data = [];
+
+        for ($i = 0; $i < 8; $i++) {
+            foreach ($cachedResponses as $response) {
+                if (empty($data[$i]['current_clicks']))
+                    $data[$i]['current_clicks'] = 0;
+
+                if (empty($data[$i]['prev_clicks']))
+                    $data[$i]['prev_clicks'] = 0;
+
+                if (empty($data[$i]['current_impressions']))
+                    $data[$i]['current_impressions'] = 0;
+
+                if (empty($data[$i]['prev_impressions']))
+                    $data[$i]['prev_impressions'] = 0;
+
+                $data[$i]['current_clicks'] += $response['current'][$i]['count_clicks'] ?? 0;
+                $data[$i]['prev_clicks'] += $response['previous'][$i]['count_clicks'] ?? 0;
+
+                $data[$i]['current_impressions'] += $response['current'][$i]['count_impressions'] ?? 0;
+                $data[$i]['prev_impressions'] += $response['previous'][$i]['count_impressions'] ?? 0;
+            }
+
+            if (empty($data[$i]['prev_clicks']))
+                $data[$i]['prev_clicks'] = 1;
+
+            if (empty($data[$i]['prev_impressions']))
+                $data[$i]['prev_impressions'] = 1;
+
+            $data[$i]['change_clicks'] =
+                round(($data[$i]['current_clicks'] - $data[$i]['prev_clicks']) / $data[$i]['prev_clicks'], 2) * 100;
+
+            $data[$i]['change_impressions'] =
+                round(($data[$i]['current_impressions'] - $data[$i]['prev_impressions']) / $data[$i]['prev_impressions'], 2) * 100;
+        }
 
         return $data;
     }
