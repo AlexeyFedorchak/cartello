@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Charts\Constants\ChartTypes;
 use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
 use App\Exceptions\NoCacheFoundForGivenChart;
@@ -16,9 +17,16 @@ class GetChartDataAPIController extends Controller
                 if (!empty($request->domain))
                     $query->whereIn('domain', $request->domain);
             })
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                $item->response = json_decode($item->response, true);
 
-        if ($cachedResponses->count() === 0)
+                return $item;
+            })
+            ->pluck('response')
+            ->toArray();
+
+        if (count($cachedResponses) === 0)
             throw new NoCacheFoundForGivenChart();
 
         $chart = Chart::where('id', $request->id)
@@ -26,12 +34,37 @@ class GetChartDataAPIController extends Controller
 
         $chart->generateTimeRow();
 
-        return [
-            'row' => $cachedResponses->map(function ($item) {
+        if ($chart->type === ChartTypes::DYNAMIC_CHART) {
+            $data = [
+                'current' => [],
+                'previous' => [],
+            ];
+
+            foreach ($cachedResponses as $cache) {
+                foreach ($cache['current'] as $dayN => $current) {
+                    if (empty($data['current'][$dayN]))
+                        $data['current'][$dayN] = 0;
+
+                    $data['current'][$dayN] += $current['count_clicks'];
+                }
+
+                foreach ($cache['previous'] as $dayN => $previous) {
+                    if (empty($data['previous'][$dayN]))
+                        $data['previous'][$dayN] = 0;
+
+                    $data['previous'][$dayN] += $previous['count_clicks'];
+                }
+            }
+        } else {
+            $data = $cachedResponses->map(function ($item) {
                 $item->response = json_decode($item->response, true);
 
                 return $item;
-            }),
+            });
+        }
+
+        return [
+            'row' => $data,
             'time_row' => $chart->time_row,
         ];
     }
