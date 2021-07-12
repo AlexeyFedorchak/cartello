@@ -128,7 +128,7 @@ class GetChartDataAPIController extends Controller
                 if (empty($data['current'][$dayN]))
                     $data['current'][$dayN] = 0;
 
-                $data['current'][$dayN]['count_clicks'] += $current['count_clicks'];
+                $data['current'][$dayN] += $current['count_clicks'];
 
                 $currentCountImpressions += $current['count_impressions'];
             }
@@ -137,7 +137,7 @@ class GetChartDataAPIController extends Controller
                 if (empty($data['previous'][$dayN]))
                     $data['previous'][$dayN] = 0;
 
-                $data['previous'][$dayN]['count_clicks'] += $previous['count_clicks'];
+                $data['previous'][$dayN] += $previous['count_clicks'];
 
                 $prevCountImpressions += $previous['count_impressions'];
             }
