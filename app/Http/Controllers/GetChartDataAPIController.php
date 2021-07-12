@@ -170,7 +170,10 @@ class GetChartDataAPIController extends Controller
     {
         $data = [];
 
-        for ($i = 0; $i < 8; $i++) {
+        for ($i = 0; $i < 7; $i++) {
+            if ($i === 0)
+                continue;
+
             foreach ($cachedResponses as $response) {
                 if (empty($data[$i]['current_clicks']))
                     $data[$i]['current_clicks'] = 0;
