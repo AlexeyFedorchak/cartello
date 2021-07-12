@@ -121,6 +121,9 @@ class DynamicChartDataGrabberV2 implements DataGrabber
                             continue;
                         }
 
+                        if (!isset($currentYearSessionsBranded[$domain][$i][$j]))
+                            $currentYearSessionsBranded[$domain][$i][$j] = 0;
+
                         $currentYearSessions[$domain][$i][$j] =
                             $value - $currentYearSessionsBranded[$domain][$i][$j];
                     }
