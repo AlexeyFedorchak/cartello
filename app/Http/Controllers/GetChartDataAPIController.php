@@ -56,11 +56,7 @@ class GetChartDataAPIController extends Controller
                 }
             }
         } else {
-            $data = $cachedResponses->map(function ($item) {
-                $item->response = json_decode($item->response, true);
-
-                return $item;
-            });
+            $data = $cachedResponses;
         }
 
         return [
