@@ -15,7 +15,7 @@ class GetChartDataAPIController extends Controller
     {
         $redisUID = '';
         foreach ($request->all() as $key => $value)
-            $redisUID .= $key . '-' . $value;
+            $redisUID .= $key . '-' . json_encode($value);
 
         $redisValue = Redis::get($redisUID);
 
@@ -24,8 +24,8 @@ class GetChartDataAPIController extends Controller
 
         $cachedResponses = CachedResponses::where('chart_id', $request->id)
             ->where(function ($query) use ($request) {
-                if (!empty($request->domain))
-                    $query->whereIn('domain', $request->domain);
+                if (!empty($request->filter))
+                    $query->whereIn('domain', $request->filter);
             })
             ->get()
             ->map(function ($item) {
@@ -33,8 +33,7 @@ class GetChartDataAPIController extends Controller
 
                 return $item;
             })
-            ->pluck('response')
-            ->toArray();
+            ->pluck('response');
 
         if (count($cachedResponses) === 0)
             throw new NoCacheFoundForGivenChart();
