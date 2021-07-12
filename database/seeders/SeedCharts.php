@@ -152,11 +152,27 @@ class SeedCharts extends Seeder
         ]);
 
         Chart::updateOrCreate([
+            'slug' => Str::slug('Non-brand opportunities - Page 1 arabic'),
+        ], [
+            'name' => 'Non-brand opportunities - Page 1',
+            'type' => ChartSlugConstants::OPPORTUNITY_TABLE,
+            'source_columns' => 'page-1-arabic'
+        ]);
+
+        Chart::updateOrCreate([
             'slug' => Str::slug('Non-brand opportunities - Page 2'),
         ], [
             'name' => 'Non-brand opportunities - Page 2',
             'type' => ChartSlugConstants::OPPORTUNITY_TABLE,
             'source_columns' => 'page-2'
+        ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Non-brand opportunities - Page 2 arabic'),
+        ], [
+            'name' => 'Non-brand opportunities - Page 2',
+            'type' => ChartSlugConstants::OPPORTUNITY_TABLE,
+            'source_columns' => 'page-2-arabic'
         ]);
     }
 }
