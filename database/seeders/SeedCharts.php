@@ -174,5 +174,13 @@ class SeedCharts extends Seeder
             'type' => ChartSlugConstants::OPPORTUNITY_TABLE,
             'source_columns' => 'page-2-arabic'
         ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Avg position'),
+        ], [
+            'name' => 'Avg position',
+            'type' => ChartSlugConstants::AVG_POSITION,
+            'source_columns' => 'avg(position)'
+        ]);
     }
 }

@@ -36,6 +36,10 @@ class GetChartDataAPIController extends Controller
             $data = $this->getComputedDataForChangeTable($cachedResponses);
         } elseif ($chart->type === ChartTypes::DYNAMIC_STRUCTURE || $chart->type === ChartTypes::DYNAMIC_STRUCTURE_PAGE) {
             $data = $this->getComputedDataForDynamicStructure($cachedResponses);
+        } elseif ($chart->type === ChartTypes::OPPORTUNITY_TABLE) {
+            $data = $this->getComputedDataForOpportunityTable($cachedResponses);
+        } elseif ($chart->type === ChartTypes::AVG_POSITION) {
+            $data = $this->getComputedDataForAvgPosition($cachedResponses);
         } else {
             $data = $cachedResponses;
         }
@@ -244,6 +248,47 @@ class GetChartDataAPIController extends Controller
                         $data[$position][$key] = 0;
 
                     $data[$position][$key] += $counts['count_clicks'];
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * group data for given set of domain
+     *
+     * @param array $cachedResponse
+     * @return array
+     */
+    private function getComputedDataForOpportunityTable(array $cachedResponse): array
+    {
+        $data = [];
+
+        foreach ($cachedResponse as $response) {
+            $data = array_merge($data, $response);
+        }
+
+        return $data;
+    }
+
+    /**
+     * get computed data for avg position chart
+     *
+     * @param array $cachedResponse
+     * @return array
+     */
+    private function getComputedDataForAvgPosition(array $cachedResponse): array
+    {
+        $data = [];
+
+        foreach ($cachedResponse as $response) {
+            foreach ($response as $period => $days) {
+                foreach ($days as $dayN => $dayV) {
+                    if (empty($data[$period][$dayN]))
+                        $data[$period][$dayN] = 0;
+
+                    $data[$period][$dayN] += $dayV['avg_position'];
                 }
             }
         }
