@@ -3,12 +3,15 @@
 namespace App\DataGrabbers;
 
 use App\BigQuery\IClient;
+use App\BigQuery\Traits\BigQueryTimeFormat;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
 
 class DynamicStructureDataGrabberV2 implements DataGrabber
 {
+    use BigQueryTimeFormat;
+
     /**
      * chart instance
      *
@@ -67,6 +70,7 @@ class DynamicStructureDataGrabberV2 implements DataGrabber
             ->where('position >= ' . $lowPosition)
             ->where('position <= ' . $highPosition)
             ->where('date <= CURRENT_DATE()')
+            ->where('date >= DATE(' . $this->switchDateString(now()->subYear()->format('Y-m-d')) . ')')
             ->where('domain = "' . $domain . '"')
             ->groupBy('date')
             ->get();

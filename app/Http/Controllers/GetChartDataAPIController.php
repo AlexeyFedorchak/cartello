@@ -34,6 +34,8 @@ class GetChartDataAPIController extends Controller
             $data = $this->getComputedDataForDynamicChart($cachedResponses);
         } elseif ($chart->type === ChartTypes::CHANGE_TABLE) {
             $data = $this->getComputedDataForChangeTable($cachedResponses);
+        } elseif ($chart->type === ChartTypes::DYNAMIC_STRUCTURE || $chart->type === ChartTypes::DYNAMIC_STRUCTURE_PAGE) {
+            $data = $this->getComputedDataForDynamicStructure($cachedResponses);
         } else {
             $data = $cachedResponses;
         }
@@ -218,5 +220,29 @@ class GetChartDataAPIController extends Controller
         }
 
         return array_values($data);
+    }
+
+    /**
+     * get computed data for dynamic structure
+     *
+     * @param array $cachedResponses
+     * @return array
+     */
+    public function getComputedDataForDynamicStructure(array $cachedResponses): array
+    {
+        $data = [];
+
+        foreach ($cachedResponses as $response) {
+            foreach ($response as $position => $days) {
+                foreach ($days as $key => $counts) {
+                    if (empty($data[$position][$key]))
+                        $data[$position][$key] = 0;
+
+                    $data[$position][$key] += $counts['count_clicks'];
+                }
+            }
+        }
+
+        return $data;
     }
 }
