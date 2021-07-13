@@ -286,9 +286,9 @@ class GetChartDataAPIController extends Controller
             foreach ($response as $period => $days) {
                 foreach ($days as $dayN => $dayV) {
                     if (empty($data[$period][$dayN]))
-                        $data[$period][$dayN] = 0;
+                        $data[$period][$dayN] = $dayV['avg_position'];
 
-                    $data[$period][$dayN] += $dayV['avg_position'];
+                    $data[$period][$dayN] += ($data[$period][$dayN] + $dayV['avg_position']) / 2;
                 }
             }
         }
