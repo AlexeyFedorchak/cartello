@@ -17,10 +17,10 @@ class GetChartDataAPIController extends Controller
      * get data for given chart
      *
      * @param ValidateGetChartDataRequest $request
-     * @return array
+     * @return string
      * @throws NoCacheFoundForGivenChart
      */
-    public function get(ValidateGetChartDataRequest $request)
+    public function get(ValidateGetChartDataRequest $request): string
     {
 //        $redisValue = Redis::get($this->getRedisUID($request));
 
@@ -45,7 +45,12 @@ class GetChartDataAPIController extends Controller
             'time_row' => $chart->time_row,
         ];
 
-//        Redis::set($this->getRedisUID($request), json_encode($response), 'EX', 86400);
+        if ($chart->type === ChartTypes::OPPORTUNITY_TABLE)
+            $response = json_encode($response, JSON_UNESCAPED_UNICODE);
+        else
+            $response = json_encode($response);
+
+//        Redis::set($this->getRedisUID($request), $response, 'EX', 86400);
 
         return $response;
     }

@@ -47,7 +47,6 @@ class OpportunityTableDataGrabber implements DataGrabber
             if ($this->chart->source_columns === 'page-2-arabic')
                 $data = $this->getRow($domain->domain, 11, 20, true);
 
-
             $rows[$domain->domain] = json_encode($data, JSON_UNESCAPED_UNICODE);
 
             CachedResponses::updateOrCreate([
@@ -86,17 +85,20 @@ class OpportunityTableDataGrabber implements DataGrabber
 
         $query->openGroupCondition();
         foreach ($this->brandKeywords() as $keyword)
-            $query->where('query not like "%' . $keyword . '%"', 'OR');
+            $query->where('query not like "%' . $keyword . '%"', 'AND');
 
         $query->closeGroupCondition();
 
-        if ($isArabic) {
-            $query->openGroupCondition();
+        $query->openGroupCondition();
+
+        if ($isArabic)
             foreach ($this->getArabicChars() as $char)
                 $query->where('query like "%' . $char . '%"', 'OR');
+        else
+            foreach ($this->getArabicChars() as $char)
+                $query->where('query not like "%' . $char . '%"', 'AND');
 
-            $query->closeGroupCondition();
-        }
+        $query->closeGroupCondition();
 
         return $query->groupBy('query')
             ->orderBy('opportunities DESC')
