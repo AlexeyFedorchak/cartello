@@ -114,8 +114,12 @@ class OrganicCTRChartDataGrabber implements DataGrabber
     {
         $ctr = [];
 
-        for ($i = 0; $i < min(count($branded), count($total)); $i++)
+        for ($i = 0; $i < min(count($branded), count($total)); $i++) {
+            if (empty($total[$i]['count_clicks']))
+                $total[$i]['count_clicks'] = 1;
+
             $ctr[] = round(($branded[$i]['count_clicks'] / $total[$i]['count_clicks']), 2) * 100;
+        }
 
         return $ctr;
     }
