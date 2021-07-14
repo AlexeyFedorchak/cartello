@@ -16,6 +16,7 @@ use App\DataGrabbers\DynamicStructureDataGrabber;
 use App\DataGrabbers\DynamicStructureDataGrabberPages;
 use App\DataGrabbers\DynamicStructureDataGrabberV2;
 use App\DataGrabbers\OpportunityTableDataGrabber;
+use App\DataGrabbers\OrganicCTRChartDataGrabber;
 use App\DataGrabbers\StructureDataCrabber;
 use App\DataGrabbers\StructurePageDataGrabber;
 use App\DataGrabbers\TableStructureChangeDataGrabber;
@@ -124,6 +125,9 @@ class Chart extends Model
 
         if ($this->type === ChartTypes::BRANDED_NON_BRANDED_CLICKS)
             return new BrandedNonBrandedClicksChartDataGrabber($this);
+
+        if ($this->type === ChartTypes::ORGANIC_CTR)
+            return new OrganicCTRChartDataGrabber($this);
 
         return null;
     }

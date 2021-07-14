@@ -11,7 +11,7 @@ use App\Charts\Models\Chart;
 use App\Sessions\Traits\BrandSessionsRegex;
 use Carbon\Carbon;
 
-class BrandedNonBrandedClicksChartDataGrabber implements DataGrabber
+class OrganicCTRChartDataGrabber implements DataGrabber
 {
     use BigQueryTimeFormat, BrandSessionsRegex;
 
@@ -38,11 +38,14 @@ class BrandedNonBrandedClicksChartDataGrabber implements DataGrabber
 
         foreach (CachedDomainList::all() as $domain) {
             $branded = $this->getClicks(now()->subYear(), now(), $domain->domain, $this->chart->time_frame);
-            $nonBranded = $this->getClicks(now()->subYear(), now(), $domain->domain, $this->chart->time_frame, false);
+            $total = $this->getClicks(now()->subYear(), now(), $domain->domain, $this->chart->time_frame, false);
+
+            $brandedPrev = $this->getClicks(now()->subYears(2), now()->subYear(), $domain->domain, $this->chart->time_frame);
+            $totalPrev = $this->getClicks(now()->subYears(2), now()->subYear(), $domain->domain, $this->chart->time_frame, false);
 
             $rows[$domain->domain] = [
-                'branded' => $branded,
-                'non_branded' => $nonBranded,
+                'current' => $this->calcCTR($branded, $total),
+                'prev' => $this->calcCTR($brandedPrev, $totalPrev),
             ];
 
             CachedResponses::updateOrCreate([
@@ -86,20 +89,34 @@ class BrandedNonBrandedClicksChartDataGrabber implements DataGrabber
             ->where('date <= DATE(' . $this->switchDateString($end->format('Y-m-d')) . ')')
             ->where('domain = "' . $domain . '"');
 
-        $query->openGroupCondition();
-
         if ($isBranded) {
+            $query->openGroupCondition();
+
             foreach ($this->brandKeywords() as $keyword)
                 $query->where('query like "%' . $keyword . '%"', 'OR');
-        } else {
-            foreach ($this->brandKeywords() as $keyword)
-                $query->where('query not like "%' . $keyword . '%"', 'AND');
-        }
 
-        $query->closeGroupCondition();
+            $query->closeGroupCondition();
+        }
 
         return $query->groupBy($timeFrame)
             ->orderBy($timeFrame)
             ->get();
+    }
+
+    /**
+     * get CTR
+     *
+     * @param array $branded
+     * @param array $total
+     * @return array
+     */
+    private function calcCTR(array $branded, array $total): array
+    {
+        $ctr = [];
+
+        for ($i = 0; $i < min(count($branded), count($total)); $i++)
+            $ctr[] = round(($branded[$i]['count_clicks'] / $total[$i]['count_clicks']), 2) * 100;
+
+        return $ctr;
     }
 }
