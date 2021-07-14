@@ -14,4 +14,6 @@ class ChartTypes
     const DYNAMIC_STRUCTURE_PAGE = 'dynamic-structure-change-page';
     const OPPORTUNITY_TABLE = 'opportunity-table';
     const AVG_POSITION = 'avg-position';
+    const BRANDED_NON_BRANDED_CLICKS = 'branded-non-branded-clicks';
+    const ORGANIC_CTR = 'organic-ctr';
 }

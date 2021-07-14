@@ -182,5 +182,29 @@ class SeedCharts extends Seeder
             'type' => ChartSlugConstants::AVG_POSITION,
             'source_columns' => 'avg(position)'
         ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Branded and non-branded clicks daily'),
+        ], [
+            'name' => 'Branded / Non-Branded',
+            'type' => ChartSlugConstants::BRANDED_NON_BRANDED_CLICKS,
+            'source_columns' => 'brand_clicks|non_brand_clicks'
+        ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Branded and non-branded clicks monthly'),
+        ], [
+            'name' => 'Branded / Non-Branded',
+            'type' => ChartSlugConstants::BRANDED_NON_BRANDED_CLICKS,
+            'source_columns' => 'brand_clicks|non_brand_clicks',
+            'time_frame' => ChartTimeFrames::MONTHLY,
+        ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Organic CTR'),
+        ], [
+            'name' => 'Organic CTR',
+            'type' => ChartSlugConstants::ORGANIC_CTR,
+        ]);
     }
 }
