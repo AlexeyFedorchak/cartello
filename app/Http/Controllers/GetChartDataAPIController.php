@@ -42,6 +42,8 @@ class GetChartDataAPIController extends Controller
             $data = $this->getComputedDataForAvgPosition($cachedResponses);
         } elseif ($chart->type === ChartTypes::BRANDED_NON_BRANDED_CLICKS) {
             $data = $this->getComputedDataForBrandedNonBranded($cachedResponses);
+        } elseif ($chart->type === ChartTypes::ORGANIC_CTR) {
+            $data = $this->getComputedDataForCTR($cachedResponses);
         } else {
             $data = $cachedResponses;
         }
@@ -315,6 +317,22 @@ class GetChartDataAPIController extends Controller
                         $data[$key][$dayN] = 0;
 
                     $data[$key][$dayN] += $day['count_clicks'];
+                }
+
+        return $data;
+    }
+
+    private function getComputedDataForCTR(array $cachedResponses): array
+    {
+        $data = [];
+
+        foreach ($cachedResponses as $response)
+            foreach ($response as $key => $days)
+                foreach ($days as $dayN => $ctr) {
+                    if (empty($data[$key][$dayN]))
+                        $data[$key][$dayN] = 0;
+
+                    $data[$key][$dayN] = ($ctr + $data[$key][$dayN]) / 2;
                 }
 
         return $data;
