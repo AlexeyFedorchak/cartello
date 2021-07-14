@@ -40,6 +40,8 @@ class GetChartDataAPIController extends Controller
             $data = $this->getComputedDataForOpportunityTable($cachedResponses);
         } elseif ($chart->type === ChartTypes::AVG_POSITION) {
             $data = $this->getComputedDataForAvgPosition($cachedResponses);
+        } elseif ($chart->type === ChartTypes::BRANDED_NON_BRANDED_CLICKS) {
+            $data = $this->getComputedDataForBrandedNonBranded($cachedResponses);
         } else {
             $data = $cachedResponses;
         }
@@ -292,6 +294,28 @@ class GetChartDataAPIController extends Controller
                 }
             }
         }
+
+        return $data;
+    }
+
+    /**
+     * get computed data for branded-non-branded dynamic charts
+     *
+     * @param array $cachedResponses
+     * @return array
+     */
+    private function getComputedDataForBrandedNonBranded(array $cachedResponses): array
+    {
+        $data = [];
+
+        foreach ($cachedResponses as $response)
+            foreach ($response as $key => $days)
+                foreach ($days as $dayN => $day) {
+                    if (empty($data[$key][$dayN]))
+                        $data[$key][$dayN] = 0;
+
+                    $data[$key][$dayN] += $day['count_clicks'];
+                }
 
         return $data;
     }
