@@ -6,6 +6,7 @@ use App\Charts\Constants\ChartPeriods;
 use App\Charts\Constants\ChartTimeFrames;
 use App\Charts\Constants\ChartTypes;
 use App\DataGrabbers\AVGPositionDynamicChartDataGrabber;
+use App\DataGrabbers\BrandedNonBrandedClicksChartDataGrabber;
 use App\DataGrabbers\ChangeTableDataGrabber;
 use App\DataGrabbers\ChangeTableDataGrabberV2;
 use App\DataGrabbers\DataGrabber;
@@ -120,6 +121,9 @@ class Chart extends Model
 
         if ($this->type === ChartTypes::AVG_POSITION)
             return new AVGPositionDynamicChartDataGrabber($this);
+
+        if ($this->type === ChartTypes::BRANDED_NON_BRANDED_CLICKS)
+            return new BrandedNonBrandedClicksChartDataGrabber($this);
 
         return null;
     }
