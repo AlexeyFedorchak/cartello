@@ -27,7 +27,11 @@ class GetChartDataAPIController extends Controller
         if (!empty($redisValue))
             return $redisValue;
 
-        $cachedResponses = $this->getResponsesOrFail($request);
+        $cachedResponsesData = $this->getResponsesOrFail($request);
+
+        $cachedResponses = $cachedResponsesData['responses'];
+        $domains = $cachedResponsesData['domains'];
+
         $chart = $this->getChartWithTimeRow($request);
 
         if ($chart->type === ChartTypes::DYNAMIC_CHART) {
@@ -44,6 +48,8 @@ class GetChartDataAPIController extends Controller
             $data = $this->getComputedDataForBrandedNonBranded($cachedResponses);
         } elseif ($chart->type === ChartTypes::ORGANIC_CTR) {
             $data = $this->getComputedDataForCTR($cachedResponses);
+        } elseif ($chart->type === ChartTypes::ORGANIC_CTR_TABLE_WEEKLY) {
+            $data = $this->getComputedDataForCTRTable($cachedResponses, $domains);
         } else {
             $data = $cachedResponses;
         }
@@ -97,14 +103,23 @@ class GetChartDataAPIController extends Controller
                 $item->response = json_decode($item->response, true);
 
                 return $item;
-            })
-            ->pluck('response')
-            ->toArray();
+            });
+
+            $responses = $cachedResponses
+                ->pluck('response')
+                ->toArray();
+
+            $domains = $cachedResponses
+                ->pluck('domain')
+                ->toArray();
 
         if (count($cachedResponses) === 0)
             throw new NoCacheFoundForGivenChart();
 
-        return $cachedResponses;
+        return [
+            'responses' => $responses,
+            'domains' => $domains,
+        ];
     }
 
     /**
@@ -334,6 +349,38 @@ class GetChartDataAPIController extends Controller
 
                     $data[$key][$dayN] = ($ctr + $data[$key][$dayN]) / 2;
                 }
+
+        return $data;
+    }
+
+    /**
+     * reorder data for ctr table
+     *
+     * @param array $cachedResponses
+     * @param $domains
+     * @return array
+     */
+    private function getComputedDataForCTRTable(array $cachedResponses, $domains): array
+    {
+        $data = [];
+
+        foreach ($cachedResponses as $domainN => $response) {
+            foreach ($response['current'] as $weekN => $weekValue) {
+                $data[] = [
+                    'week' => $response['weekly_time_row'][$weekN],
+                    'domain' => $domains[$domainN],
+                    'ctr' => $weekValue,
+                    'weekN' => $weekN,
+                ];
+            }
+        }
+
+        usort($data, function ($a, $b) {
+           if ($a['weekN'] > $b['weekN']) return 1;
+           if ($a['weekN'] < $b['weekN']) return -1;
+
+           return 0;
+        });
 
         return $data;
     }

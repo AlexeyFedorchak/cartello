@@ -38,7 +38,7 @@ class OrganicCTRTableDataGrabber implements DataGrabber
         $rows = [];
 
         foreach (CachedDomainList::all() as $domain) {
-            $period = CarbonPeriod::create(now()->subMonths(2), now());
+            $period = CarbonPeriod::create(now()->subMonths(13), now());
             $weeks = [];
 
             foreach ($period as $time) {
@@ -53,7 +53,7 @@ class OrganicCTRTableDataGrabber implements DataGrabber
 
             $rows[$domain->domain] = [
                 'current' => array_reverse($this->calcCTR($branded, $total)),
-                'weekly_time_row' => array_reverse($weeks),
+                'weekly_time_row' => array_values(array_unique(array_reverse($weeks))),
             ];
 
             CachedResponses::updateOrCreate([
