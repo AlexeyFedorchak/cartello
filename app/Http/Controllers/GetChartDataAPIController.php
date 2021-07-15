@@ -52,6 +52,8 @@ class GetChartDataAPIController extends Controller
             $data = $this->getComputedDataForCTRTable($cachedResponses, $domains);
         } elseif ($chart->type === ChartTypes::NON_BRANDED_CLICKS) {
             $data = $this->getComputedDataForNonBrandedChart($cachedResponses);
+        } elseif ($chart->type === ChartTypes::NON_BRANDED_CLICKS_PER_DEVICE) {
+            $data = $this->getComputedDataForNonBrandPerDeviceChart($cachedResponses);
         } else {
             $data = $cachedResponses;
         }
@@ -407,6 +409,33 @@ class GetChartDataAPIController extends Controller
                 }
             }
         }
+
+        return $data;
+    }
+
+    /**
+     * get computed data for non brand clicks per device
+     *
+     * @param array $cachedResponse
+     * @return array
+     */
+    private function getComputedDataForNonBrandPerDeviceChart(array $cachedResponse): array
+    {
+        $data = [];
+
+        foreach ($cachedResponse as $domainV)
+            foreach ($domainV as $deviceN => $deviceV)
+                foreach ($deviceV as $period => $periodV) {
+                    if (!is_array($periodV))
+                        continue;
+
+                    foreach ($periodV as $dayN => $dayV) {
+                        if (!isset($data[$deviceN . '-' . $period][$dayN]))
+                            $data[$deviceN . '-' . $period][$dayN] = 0;
+
+                        $data[$deviceN . '-' . $period][$dayN] += $dayV['count_clicks'];
+                    }
+                }
 
         return $data;
     }
