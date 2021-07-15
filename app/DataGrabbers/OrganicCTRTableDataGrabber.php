@@ -10,8 +10,9 @@ use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
 use App\Sessions\Traits\BrandSessionsRegex;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
-class OrganicCTRChartDataGrabber implements DataGrabber
+class OrganicCTRTableDataGrabber implements DataGrabber
 {
     use BigQueryTimeFormat, BrandSessionsRegex;
 
@@ -37,15 +38,22 @@ class OrganicCTRChartDataGrabber implements DataGrabber
         $rows = [];
 
         foreach (CachedDomainList::all() as $domain) {
+            $period = CarbonPeriod::create(now()->subMonths(2), now());
+            $weeks = [];
+
+            foreach ($period as $time) {
+                $weeks[] = $time->startOfWeek()->format('d F Y')
+                    . ' - '
+                    . $time->endOfWeek()->format('d F Y')
+                    . ' (week #' . $time->format('W') . ')';
+            }
+
             $branded = $this->getClicks(now()->subYear(), now(), $domain->domain, $this->chart->time_frame);
             $total = $this->getClicks(now()->subYear(), now(), $domain->domain, $this->chart->time_frame, false);
 
-            $brandedPrev = $this->getClicks(now()->subYears(2), now()->subYear(), $domain->domain, $this->chart->time_frame);
-            $totalPrev = $this->getClicks(now()->subYears(2), now()->subYear(), $domain->domain, $this->chart->time_frame, false);
-
             $rows[$domain->domain] = [
-                'current' => $this->calcCTR($branded, $total),
-                'prev' => $this->calcCTR($brandedPrev, $totalPrev),
+                'current' => array_reverse($this->calcCTR($branded, $total)),
+                'weekly_time_row' => array_reverse($weeks),
             ];
 
             CachedResponses::updateOrCreate([
@@ -54,6 +62,8 @@ class OrganicCTRChartDataGrabber implements DataGrabber
             ], [
                 'response' => json_encode($rows[$domain->domain])
             ]);
+
+            echo "Processed: " . $domain->domain . "\r\n";
         }
 
         return $rows;

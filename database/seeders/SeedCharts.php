@@ -207,5 +207,13 @@ class SeedCharts extends Seeder
             'type' => ChartSlugConstants::ORGANIC_CTR,
             'time_frame' => ChartTimeFrames::WEEKLY,
         ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Organic CTR table weekly'),
+        ], [
+            'name' => 'Organic CTR',
+            'type' => ChartSlugConstants::ORGANIC_CTR_TABLE_WEEKLY,
+            'time_frame' => ChartTimeFrames::WEEKLY,
+        ]);
     }
 }

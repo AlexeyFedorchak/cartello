@@ -17,6 +17,7 @@ use App\DataGrabbers\DynamicStructureDataGrabberPages;
 use App\DataGrabbers\DynamicStructureDataGrabberV2;
 use App\DataGrabbers\OpportunityTableDataGrabber;
 use App\DataGrabbers\OrganicCTRChartDataGrabber;
+use App\DataGrabbers\OrganicCTRTableDataGrabber;
 use App\DataGrabbers\StructureDataCrabber;
 use App\DataGrabbers\StructurePageDataGrabber;
 use App\DataGrabbers\TableStructureChangeDataGrabber;
@@ -128,6 +129,9 @@ class Chart extends Model
 
         if ($this->type === ChartTypes::ORGANIC_CTR)
             return new OrganicCTRChartDataGrabber($this);
+
+        if ($this->type === ChartTypes::ORGANIC_CTR_TABLE_WEEKLY)
+            return new OrganicCTRTableDataGrabber($this);
 
         return null;
     }
