@@ -45,8 +45,8 @@ class NonBrandedClicksDataGrabber implements DataGrabber
             );
 
             $prevNonBrandedClicks = $this->getClicks(
+                now()->subYears(2),
                 now()->subYear(),
-                now(),
                 $domain->domain,
                 $this->chart->time_frame
             );
