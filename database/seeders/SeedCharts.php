@@ -205,6 +205,7 @@ class SeedCharts extends Seeder
         ], [
             'name' => 'Organic CTR',
             'type' => ChartSlugConstants::ORGANIC_CTR,
+            'time_frame' => ChartTimeFrames::WEEKLY,
         ]);
     }
 }

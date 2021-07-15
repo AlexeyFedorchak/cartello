@@ -76,6 +76,9 @@ class OrganicCTRChartDataGrabber implements DataGrabber
         if ($timeFrame === ChartTimeFrames::DAILY)
             $timeFrame = 'day';
 
+        if ($timeFrame === ChartTimeFrames::WEEKLY)
+            $timeFrame = 'week';
+
         if ($timeFrame === ChartTimeFrames::MONTHLY)
             $timeFrame = 'month';
 
@@ -118,7 +121,7 @@ class OrganicCTRChartDataGrabber implements DataGrabber
             if (empty($total[$i]['count_clicks']))
                 $total[$i]['count_clicks'] = 1;
 
-            $ctr[] = round(($branded[$i]['count_clicks'] / $total[$i]['count_clicks']), 2) * 100;
+            $ctr[] = round(($branded[$i]['count_clicks'] / $total[$i]['count_clicks']), 4) * 100;
         }
 
         return $ctr;
