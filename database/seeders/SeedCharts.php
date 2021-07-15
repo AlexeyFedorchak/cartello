@@ -215,5 +215,13 @@ class SeedCharts extends Seeder
             'type' => ChartSlugConstants::ORGANIC_CTR_TABLE_WEEKLY,
             'time_frame' => ChartTimeFrames::WEEKLY,
         ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Change table per domain'),
+        ], [
+            'name' => 'Domains - Previous Month YOY Performance',
+            'type' => ChartSlugConstants::CHANGE_TABLE_PER_DOMAINS,
+            'time_frame' => ChartTimeFrames::MONTHLY,
+        ]);
     }
 }

@@ -9,6 +9,7 @@ use App\DataGrabbers\AVGPositionDynamicChartDataGrabber;
 use App\DataGrabbers\BrandedNonBrandedClicksChartDataGrabber;
 use App\DataGrabbers\ChangeTableDataGrabber;
 use App\DataGrabbers\ChangeTableDataGrabberV2;
+use App\DataGrabbers\ChangeTablePerDomainDataGrabber;
 use App\DataGrabbers\DataGrabber;
 use App\DataGrabbers\DynamicChartDataGrabber;
 use App\DataGrabbers\DynamicChartDataGrabberV2;
@@ -132,6 +133,9 @@ class Chart extends Model
 
         if ($this->type === ChartTypes::ORGANIC_CTR_TABLE_WEEKLY)
             return new OrganicCTRTableDataGrabber($this);
+
+        if ($this->type === ChartTypes::CHANGE_TABLE_PER_DOMAINS)
+            return new ChangeTablePerDomainDataGrabber($this);
 
         return null;
     }
