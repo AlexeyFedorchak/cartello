@@ -50,6 +50,8 @@ class GetChartDataAPIController extends Controller
             $data = $this->getComputedDataForCTR($cachedResponses);
         } elseif ($chart->type === ChartTypes::ORGANIC_CTR_TABLE_WEEKLY) {
             $data = $this->getComputedDataForCTRTable($cachedResponses, $domains);
+        } elseif ($chart->type === ChartTypes::NON_BRANDED_CLICKS) {
+            $data = $this->getComputedDataForNonBrandedChart($cachedResponses);
         } else {
             $data = $cachedResponses;
         }
@@ -381,6 +383,30 @@ class GetChartDataAPIController extends Controller
 
            return 0;
         });
+
+        return $data;
+    }
+
+    /**
+     * get computed data for non branded clicks chart
+     *
+     * @param array $cachedResponses
+     * @return array
+     */
+    private function getComputedDataForNonBrandedChart(array $cachedResponses): array
+    {
+        $data = [];
+
+        foreach ($cachedResponses as $response) {
+            foreach ($response as $period => $days) {
+                foreach ($days as $dayN => $dayV) {
+                    if (!isset($data[$period][$dayN]))
+                        $data[$period][$dayN] = 0;
+
+                    $data[$period][$dayN] += $dayV['count_clicks'];
+                }
+            }
+        }
 
         return $data;
     }

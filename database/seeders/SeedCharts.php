@@ -223,5 +223,19 @@ class SeedCharts extends Seeder
             'type' => ChartSlugConstants::CHANGE_TABLE_PER_DOMAINS,
             'time_frame' => ChartTimeFrames::MONTHLY,
         ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Non-branded clicks YOY'),
+        ], [
+            'name' => 'Non branded clicks',
+            'type' => ChartSlugConstants::NON_BRANDED_CLICKS,
+        ]);
+
+        Chart::updateOrCreate([
+            'slug' => Str::slug('Non-branded clicks per device'),
+        ], [
+            'name' => 'Non branded clicks per device',
+            'type' => ChartSlugConstants::NON_BRANDED_CLICKS,
+        ]);
     }
 }

@@ -16,6 +16,7 @@ use App\DataGrabbers\DynamicChartDataGrabberV2;
 use App\DataGrabbers\DynamicStructureDataGrabber;
 use App\DataGrabbers\DynamicStructureDataGrabberPages;
 use App\DataGrabbers\DynamicStructureDataGrabberV2;
+use App\DataGrabbers\NonBrandedClicksDataGrabber;
 use App\DataGrabbers\OpportunityTableDataGrabber;
 use App\DataGrabbers\OrganicCTRChartDataGrabber;
 use App\DataGrabbers\OrganicCTRTableDataGrabber;
@@ -136,6 +137,9 @@ class Chart extends Model
 
         if ($this->type === ChartTypes::CHANGE_TABLE_PER_DOMAINS)
             return new ChangeTablePerDomainDataGrabber($this);
+
+        if ($this->type === ChartTypes::NON_BRANDED_CLICKS)
+            return new NonBrandedClicksDataGrabber($this);
 
         return null;
     }

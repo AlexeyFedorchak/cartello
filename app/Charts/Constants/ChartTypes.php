@@ -18,4 +18,6 @@ class ChartTypes
     const ORGANIC_CTR = 'organic-ctr';
     const ORGANIC_CTR_TABLE_WEEKLY = 'organic-ctr-table-weekly';
     const CHANGE_TABLE_PER_DOMAINS = 'change-table-per-domains';
+    const NON_BRANDED_CLICKS = 'non-branded-clicks';
+    const NON_BRANDED_CLICKS_PER_DEVICE = 'non-branded-clicks-per-device';
 }
