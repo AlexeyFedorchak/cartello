@@ -17,6 +17,7 @@ use App\DataGrabbers\DynamicStructureDataGrabber;
 use App\DataGrabbers\DynamicStructureDataGrabberPages;
 use App\DataGrabbers\DynamicStructureDataGrabberV2;
 use App\DataGrabbers\NonBrandedClicksDataGrabber;
+use App\DataGrabbers\NonBrandedClicksPerDeviceChartDataGrabber;
 use App\DataGrabbers\OpportunityTableDataGrabber;
 use App\DataGrabbers\OrganicCTRChartDataGrabber;
 use App\DataGrabbers\OrganicCTRTableDataGrabber;
@@ -140,6 +141,9 @@ class Chart extends Model
 
         if ($this->type === ChartTypes::NON_BRANDED_CLICKS)
             return new NonBrandedClicksDataGrabber($this);
+
+        if ($this->type === ChartTypes::NON_BRANDED_CLICKS_PER_DEVICE)
+            return new NonBrandedClicksPerDeviceChartDataGrabber($this);
 
         return null;
     }

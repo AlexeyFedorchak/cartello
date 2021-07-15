@@ -235,7 +235,7 @@ class SeedCharts extends Seeder
             'slug' => Str::slug('Non-branded clicks per device'),
         ], [
             'name' => 'Non branded clicks per device',
-            'type' => ChartSlugConstants::NON_BRANDED_CLICKS,
+            'type' => ChartSlugConstants::NON_BRANDED_CLICKS_PER_DEVICE,
         ]);
     }
 }
