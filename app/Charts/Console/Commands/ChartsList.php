@@ -29,6 +29,6 @@ class ChartsList extends Command
     public function handle()
     {
         foreach (Chart::all() as $chart)
-            $this->info($chart->id . ': ' . $chart->name . ' [' . $chart->slug  . ']');
+            $this->info($chart->id . ': ' . $chart->type . ' [*** ' . $chart->slug  . ' ***]');
     }
 }
