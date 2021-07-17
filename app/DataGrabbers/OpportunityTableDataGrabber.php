@@ -103,7 +103,7 @@ class OpportunityTableDataGrabber implements DataGrabber
             $query->openGroupCondition();
 
             foreach ($this->getEnglishChars() as $char)
-                $query->where('query not like "%' . $char . '%"', 'OR');
+                $query->where('query not like "%' . $char . '%"', 'AND');
 
             $query->closeGroupCondition();
         } else {
@@ -119,7 +119,7 @@ class OpportunityTableDataGrabber implements DataGrabber
             $query->openGroupCondition();
 
             foreach ($this->getEnglishChars() as $char)
-                $query->where('query like "%' . $char . '%"', 'AND');
+                $query->where('query like "%' . $char . '%"', 'OR');
 
             $query->closeGroupCondition();
         }
