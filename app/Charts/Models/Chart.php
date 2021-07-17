@@ -11,6 +11,7 @@ use App\DataComputers\ChangeTableDataComputer;
 use App\DataComputers\CTRChartDataComputer;
 use App\DataComputers\CTRTableChartDataComputer;
 use App\DataComputers\DataComputer;
+use App\DataComputers\DefaultDataComputer;
 use App\DataComputers\DynamicChartDataComputer;
 use App\DataComputers\DynamicStructureDataComputer;
 use App\DataComputers\NonBrandedClicksDataComputer;
@@ -196,7 +197,7 @@ class Chart extends Model
         if ($this->type === ChartTypes::NON_BRANDED_CLICKS_PER_DEVICE)
             return new NonBrandedClicksPerDeviceDataComputer();
 
-        return null;
+        return new DefaultDataComputer();
     }
 
     /**
