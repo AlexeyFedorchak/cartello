@@ -4,6 +4,7 @@ namespace App\DataGrabbers;
 
 use App\BigQuery\IClient;
 use App\BigQuery\Traits\BigQueryTimeFormat;
+use App\Charts\Constants\ChartTable;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
@@ -32,7 +33,8 @@ class ChangeTableDataGrabberV2 implements DataGrabber
      */
     public function rows(): array
     {
-        $currentSessions = $this->getYearSessionsForPeriod(now()->subMonths(6), now());
+        $currentSessions = $this->getYearSessionsForPeriod(
+            now()->subMonths(6), now());
         $prevSessions = $this->getYearSessionsForPeriod(now()->subMonths(12), now()->subMonths(6));
 
         $rows = [];
@@ -56,6 +58,10 @@ class ChangeTableDataGrabberV2 implements DataGrabber
 
 
     /**
+     * get sessions for given period
+     *
+     * @param Carbon $start
+     * @param Carbon $end
      * @return array
      */
     private function getYearSessionsForPeriod(Carbon $start, Carbon $end): array
@@ -109,6 +115,13 @@ class ChangeTableDataGrabberV2 implements DataGrabber
         return $currentYearSessions;
     }
 
+    /**
+     * sub int values for two arrays
+     *
+     * @param array $list1
+     * @param array $list2
+     * @return array
+     */
     private function subInts(array $list1, array $list2)
     {
         $list = [];
@@ -127,6 +140,15 @@ class ChangeTableDataGrabberV2 implements DataGrabber
         return $list;
     }
 
+    /**
+     * get session for given period
+     *
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @param string $period
+     * @param bool $isBrand
+     * @return array
+     */
     public function getSessions(Carbon $startDate, Carbon $endDate, string $period, bool $isBrand = true)
     {
         $startDate = $this->switchDateString($startDate->format('Y-m-d'));
@@ -135,7 +157,7 @@ class ChangeTableDataGrabberV2 implements DataGrabber
         $data = [];
         foreach (CachedDomainList::all() as $domain) {
             $query = app(IClient::class)
-                ->select('searchanalytics', [
+                ->select(ChartTable::CHART_TABLE, [
                     'SUM(clicks) as count_clicks',
                     'SUM(impressions) as count_impressions',
                     "DATE_TRUNC(DATE(date), " . $period . ") AS " . $period,

@@ -5,6 +5,7 @@ namespace App\DataGrabbers;
 use App\BigQuery\IClient;
 use App\BigQuery\Traits\BigQueryTimeFormat;
 use App\Charts\Constants\ChartPeriods;
+use App\Charts\Constants\ChartTable;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
@@ -80,8 +81,6 @@ class TableStructureChangeDataGrabber implements DataGrabber
             ], [
                 'response' => json_encode($rows[$domain->domain]),
             ]);
-
-            echo "Processed: " . $domain->domain . "\r\n";
         }
 
         return $rows;
@@ -103,7 +102,7 @@ class TableStructureChangeDataGrabber implements DataGrabber
         $endDate = $this->switchDateString($endDate->format('Y-m-d'));
 
         return app(IClient::class)
-            ->select('searchanalytics', ['SUM(clicks) as count_clicks'])
+            ->select(ChartTable::CHART_TABLE, ['SUM(clicks) as count_clicks'])
             ->where('position >= ' . $lowPosition)
             ->where('position <= ' . $highPosition)
             ->where('date <= DATE(' . $endDate . ')')

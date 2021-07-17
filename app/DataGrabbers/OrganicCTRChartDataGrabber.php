@@ -4,6 +4,7 @@ namespace App\DataGrabbers;
 
 use App\BigQuery\IClient;
 use App\BigQuery\Traits\BigQueryTimeFormat;
+use App\Charts\Constants\ChartTable;
 use App\Charts\Constants\ChartTimeFrames;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
@@ -37,11 +38,35 @@ class OrganicCTRChartDataGrabber implements DataGrabber
         $rows = [];
 
         foreach (CachedDomainList::all() as $domain) {
-            $branded = $this->getClicks(now()->subYear(), now(), $domain->domain, $this->chart->time_frame);
-            $total = $this->getClicks(now()->subYear(), now(), $domain->domain, $this->chart->time_frame, false);
+            $branded = $this->getClicks(
+                now()->startOfYear(),
+                now(),
+                $domain->domain,
+                $this->chart->time_frame
+            );
 
-            $brandedPrev = $this->getClicks(now()->subYears(2), now()->subYear(), $domain->domain, $this->chart->time_frame);
-            $totalPrev = $this->getClicks(now()->subYears(2), now()->subYear(), $domain->domain, $this->chart->time_frame, false);
+            $total = $this->getClicks(
+                now()->startOfYear(),
+                now(),
+                $domain->domain,
+                $this->chart->time_frame,
+                false
+            );
+
+            $brandedPrev = $this->getClicks(
+                now()->subYear()->startOfYear(),
+                now()->subYear(),
+                $domain->domain,
+                $this->chart->time_frame
+            );
+
+            $totalPrev = $this->getClicks(
+                now()->subYear()->startOfYear(),
+                now()->subYear(),
+                $domain->domain,
+                $this->chart->time_frame,
+                false
+            );
 
             $rows[$domain->domain] = [
                 'current' => $this->calcCTR($branded, $total),
@@ -81,7 +106,7 @@ class OrganicCTRChartDataGrabber implements DataGrabber
             $timeFrame = 'month';
 
         $query = app(IClient::class)
-            ->select('searchanalytics', [
+            ->select(ChartTable::CHART_TABLE, [
                 'SUM(clicks) as count_clicks',
                 'SUM(impressions) as count_impressions',
                 "DATE_TRUNC(DATE(date), " . $timeFrame . ") AS " . $timeFrame,

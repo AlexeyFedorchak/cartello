@@ -3,6 +3,7 @@
 namespace App\DataGrabbers;
 
 use App\BigQuery\IClient;
+use App\Charts\Constants\ChartTable;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
@@ -60,8 +61,6 @@ class StructureDataCrabber implements DataGrabber
             ], [
                 'response' => json_encode($rows[$domain->domain]),
             ]);
-
-            echo "Processed: " . $domain->domain . "\r\n";
         }
 
         return $rows;
@@ -78,7 +77,7 @@ class StructureDataCrabber implements DataGrabber
     private function getRow(string $domain, int $lowPosition = 1, int $highPosition = 3): array
     {
         return app(IClient::class)
-            ->select('searchanalytics', ['SUM(clicks) as count_clicks'])
+            ->select(ChartTable::CHART_TABLE, ['SUM(clicks) as count_clicks'])
             ->where('position >= ' . $lowPosition)
             ->where('position <= ' . $highPosition)
             ->where('date <= CURRENT_DATE()')

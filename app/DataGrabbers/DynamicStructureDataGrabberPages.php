@@ -3,12 +3,16 @@
 namespace App\DataGrabbers;
 
 use App\BigQuery\IClient;
+use App\BigQuery\Traits\BigQueryTimeFormat;
+use App\Charts\Constants\ChartTable;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
 
 class DynamicStructureDataGrabberPages implements DataGrabber
 {
+    use BigQueryTimeFormat;
+
     /**
      * chart instance
      *
@@ -65,10 +69,11 @@ class DynamicStructureDataGrabberPages implements DataGrabber
     private function getRow(string $domain, int $lowPosition = 1, int $highPosition = 3): array
     {
         return app(IClient::class)
-            ->select('searchanalytics', ['SUM(clicks) as count_clicks', 'SUM(impressions) as count_impressions', 'date'])
+            ->select(ChartTable::CHART_TABLE, ['SUM(clicks) as count_clicks', 'SUM(impressions) as count_impressions', 'date'])
             ->where('position >= ' . $lowPosition)
             ->where('position <= ' . $highPosition)
             ->where('date <= CURRENT_DATE()')
+            ->where('date >= DATE(' . $this->switchDateString(now()->startOfYear()->format('Y-m-d')) . ')')
             ->where('domain = "' . $domain . '"')
             ->groupBy('date')
             ->orderBy('date')

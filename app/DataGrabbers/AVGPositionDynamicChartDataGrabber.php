@@ -4,6 +4,7 @@ namespace App\DataGrabbers;
 
 use App\BigQuery\IClient;
 use App\BigQuery\Traits\BigQueryTimeFormat;
+use App\Charts\Constants\ChartTable;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
@@ -35,8 +36,17 @@ class AVGPositionDynamicChartDataGrabber implements DataGrabber
         $rows = [];
 
         foreach (CachedDomainList::all() as $domain) {
-            $current = $this->getAvgPositionForPeriod(now()->subYear(), now(), $domain->domain);
-            $prev = $this->getAvgPositionForPeriod(now()->subYears(2), now()->subYear(), $domain->domain);
+            $current = $this->getAvgPositionForPeriod(
+                now()->startOfYear(),
+                now(),
+                $domain->domain
+            );
+
+            $prev = $this->getAvgPositionForPeriod(
+                now()->subYear()->startOfYear(),
+                now()->subYear(),
+                $domain->domain
+            );
 
             $rows[$domain->domain] = [
                 'current' => $current,
@@ -65,7 +75,7 @@ class AVGPositionDynamicChartDataGrabber implements DataGrabber
     private function getAvgPositionForPeriod(Carbon $start, Carbon $end, string $domain)
     {
         return app(IClient::class)
-            ->select('searchanalytics', ['AVG(position) as avg_position'])
+            ->select(ChartTable::CHART_TABLE, ['AVG(position) as avg_position'])
             ->where('date >= DATE(' . $this->switchDateString($start->format('Y-m-d')) . ')')
             ->where('date <= DATE(' . $this->switchDateString($end->format('Y-m-d')) . ')')
             ->where('domain = "' . $domain . '"')

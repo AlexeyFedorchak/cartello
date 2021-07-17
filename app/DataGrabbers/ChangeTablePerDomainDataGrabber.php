@@ -4,6 +4,7 @@ namespace App\DataGrabbers;
 
 use App\BigQuery\IClient;
 use App\BigQuery\Traits\BigQueryTimeFormat;
+use App\Charts\Constants\ChartTable;
 use App\Charts\Constants\ChartTimeFrames;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
@@ -104,7 +105,7 @@ class ChangeTablePerDomainDataGrabber implements DataGrabber
             $period = 'day';
 
         $query = app(IClient::class)
-            ->select('searchanalytics', [
+            ->select(ChartTable::CHART_TABLE, [
                 'SUM(clicks) as count_clicks',
                 'SUM(impressions) as count_impressions',
                 "DATE_TRUNC(DATE(date), " . $period . ") AS " . $period,

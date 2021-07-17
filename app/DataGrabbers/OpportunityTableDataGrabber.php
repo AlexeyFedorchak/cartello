@@ -4,6 +4,7 @@ namespace App\DataGrabbers;
 
 use App\BigQuery\IClient;
 use App\BigQuery\Traits\BigQueryTimeFormat;
+use App\Charts\Constants\ChartTable;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
@@ -72,7 +73,7 @@ class OpportunityTableDataGrabber implements DataGrabber
     private function getRow(string $domain, int $lowPosition = 1, int $highPosition = 3, bool $isArabic = false): array
     {
         $query = app(IClient::class)
-            ->select('searchanalytics', [
+            ->select(ChartTable::CHART_TABLE, [
                 'SUM(clicks) as clicks',
                 'SUM(impressions) as impressions',
                 'AVG(position) as position',

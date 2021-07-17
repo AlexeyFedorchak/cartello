@@ -4,6 +4,7 @@ namespace App\DataGrabbers;
 
 use App\BigQuery\IClient;
 use App\BigQuery\Traits\BigQueryTimeFormat;
+use App\Charts\Constants\ChartTable;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
@@ -32,27 +33,22 @@ class DynamicChartDataGrabberV2 implements DataGrabber
      */
     public function rows(): array
     {
-        $currentYearSessions = $this->getYearSessionsForPeriod(now()->subYear(), now());
-        $prevYearSessions = $this->getYearSessionsForPeriod(now()->subYears(2), now()->subYear());
+        $currentYearSessions = $this->getYearSessionsForPeriod(
+            now()->startOfYear(),
+            now()
+        );
 
-//        $totalSessions = $this->overview(now()->subMonth(), now());
-//        $totalSessionsPrev = $this->overview(now()->subMonths(2), now()->subMonth());
+        $prevYearSessions = $this->getYearSessionsForPeriod(
+            now()->subYear()->startOfYear(),
+            now()->subYear()
+        );
 
         $rows = [];
+
         foreach (CachedDomainList::all() as $domain) {
             $rows[$domain->domain] = [
                 'current' => $currentYearSessions[$domain->domain],
                 'previous' => $prevYearSessions[$domain->domain],
-//                'overview' => [
-//                    'count_clicks' => $totalSessions[$domain->domain]['count_clicks'],
-//                    'count_clicks_change'
-//                    => ($totalSessions[$domain->domain]['count_clicks'] - $totalSessionsPrev[$domain->domain]['count_clicks'])
-//                        / $totalSessionsPrev[$domain->domain]['count_clicks'],
-//                    'count_impressions' => $totalSessions[$domain->domain]['count_impressions'],
-//                    'count_impressions_change'
-//                    => ($totalSessions[$domain->domain]['count_impressions'] - $totalSessionsPrev[$domain->domain]['count_impressions'])
-//                        / $totalSessionsPrev[$domain->domain]['count_impressions'],
-//                ]
             ];
 
             CachedResponses::updateOrCreate([
@@ -151,7 +147,7 @@ class DynamicChartDataGrabberV2 implements DataGrabber
         $data = [];
         foreach (CachedDomainList::all() as $domain) {
             $query = app(IClient::class)
-                ->select('searchanalytics', [
+                ->select(ChartTable::CHART_TABLE, [
                     'SUM(clicks) as count_clicks',
                     'SUM(impressions) as count_impressions',
                     "DATE_TRUNC(DATE(date), " . $period . ") AS " . $period,
@@ -194,7 +190,7 @@ class DynamicChartDataGrabberV2 implements DataGrabber
         $data = [];
         foreach (CachedDomainList::all() as $domain) {
             $query = app(IClient::class)
-                ->select('searchanalytics', [
+                ->select(ChartTable::CHART_TABLE, [
                     'SUM(clicks) as count_clicks',
                     'SUM(impressions) as count_impressions',
 //                    "DATE_TRUNC(DATE(date), " . $period . ") AS " . $period,

@@ -4,6 +4,7 @@ namespace App\DataGrabbers;
 
 use App\BigQuery\IClient;
 use App\BigQuery\Traits\BigQueryTimeFormat;
+use App\Charts\Constants\ChartTable;
 use App\Charts\Constants\ChartTimeFrames;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
@@ -40,7 +41,7 @@ class NonBrandedClicksPerDeviceChartDataGrabber implements DataGrabber
         foreach (CachedDomainList::all() as $domain) {
             foreach ($this->devices() as $device) {
                 $currentNonBrandedClicks = $this->getClicks(
-                    now()->subYear(),
+                    now()->startOfYear(),
                     now(),
                     $domain->domain,
                     $this->chart->time_frame,
@@ -48,7 +49,7 @@ class NonBrandedClicksPerDeviceChartDataGrabber implements DataGrabber
                 );
 
                 $prevNonBrandedClicks = $this->getClicks(
-                    now()->subYears(2),
+                    now()->subYear()->startOfYear(),
                     now()->subYear(),
                     $domain->domain,
                     $this->chart->time_frame,
@@ -67,8 +68,6 @@ class NonBrandedClicksPerDeviceChartDataGrabber implements DataGrabber
             ], [
                 'response' => json_encode($rows[$domain->domain])
             ]);
-
-            echo "Processed: " . $domain->domain . "\r\n";
         }
 
         return $rows;
@@ -96,7 +95,7 @@ class NonBrandedClicksPerDeviceChartDataGrabber implements DataGrabber
             $timeFrame = 'month';
 
         $query = app(IClient::class)
-            ->select('searchanalytics', [
+            ->select(ChartTable::CHART_TABLE, [
                 'SUM(clicks) as count_clicks',
                 'SUM(impressions) as count_impressions',
                 "DATE_TRUNC(DATE(date), " . $timeFrame . ") AS " . $timeFrame,

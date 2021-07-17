@@ -4,6 +4,7 @@ namespace App\DataGrabbers;
 
 use App\BigQuery\IClient;
 use App\BigQuery\Traits\BigQueryTimeFormat;
+use App\Charts\Constants\ChartTable;
 use App\Charts\Constants\ChartTimeFrames;
 use App\Charts\Models\CachedDomainList;
 use App\Charts\Models\CachedResponses;
@@ -37,8 +38,20 @@ class BrandedNonBrandedClicksChartDataGrabber implements DataGrabber
         $rows = [];
 
         foreach (CachedDomainList::all() as $domain) {
-            $branded = $this->getClicks(now()->subYear(), now(), $domain->domain, $this->chart->time_frame);
-            $nonBranded = $this->getClicks(now()->subYear(), now(), $domain->domain, $this->chart->time_frame, false);
+            $branded = $this->getClicks(
+                now()->startOfYear(),
+                now(),
+                $domain->domain,
+                $this->chart->time_frame
+            );
+
+            $nonBranded = $this->getClicks(
+                now()->startOfYear(),
+                now(),
+                $domain->domain,
+                $this->chart->time_frame,
+                false
+            );
 
             $rows[$domain->domain] = [
                 'branded' => $branded,
@@ -51,8 +64,6 @@ class BrandedNonBrandedClicksChartDataGrabber implements DataGrabber
             ], [
                 'response' => json_encode($rows[$domain->domain])
             ]);
-
-            echo "Processed: " . $domain->domain . "\r\n";
         }
 
         return $rows;
@@ -77,7 +88,7 @@ class BrandedNonBrandedClicksChartDataGrabber implements DataGrabber
             $timeFrame = 'month';
 
         $query = app(IClient::class)
-            ->select('searchanalytics', [
+            ->select(ChartTable::CHART_TABLE, [
                 'SUM(clicks) as count_clicks',
                 'SUM(impressions) as count_impressions',
                 "DATE_TRUNC(DATE(date), " . $timeFrame . ") AS " . $timeFrame,
