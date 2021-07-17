@@ -23,8 +23,8 @@ class GetChartDataAPIController extends Controller
     {
 //        $redisValue = Redis::get($this->getRedisUID($request));
 
-        if (!empty($redisValue))
-            return $redisValue;
+//        if (!empty($redisValue))
+//            return $redisValue;
 
         $cachedResponsesData = $this->getResponsesOrFail($request);
         $chart = $this->getChartWithTimeRow($request);
