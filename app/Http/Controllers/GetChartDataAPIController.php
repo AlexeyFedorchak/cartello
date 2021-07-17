@@ -99,7 +99,7 @@ class GetChartDataAPIController extends Controller
     {
         $cachedResponses = CachedResponses::where('chart_id', $request->id)
             ->where(function ($query) use ($request) {
-                if (!empty($request->filter))
+                if (!empty($request->filter) && count($request->filter) < 15)
                     $query->whereIn('domain', $request->filter);
             })
             ->get()

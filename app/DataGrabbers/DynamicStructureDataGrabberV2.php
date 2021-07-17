@@ -73,6 +73,7 @@ class DynamicStructureDataGrabberV2 implements DataGrabber
             ->where('date >= DATE(' . $this->switchDateString(now()->subYear()->format('Y-m-d')) . ')')
             ->where('domain = "' . $domain . '"')
             ->groupBy('date')
+            ->orderBy('date')
             ->get();
     }
 }
