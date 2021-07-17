@@ -70,6 +70,7 @@ class AVGPositionDynamicChartDataGrabber implements DataGrabber
             ->where('date <= DATE(' . $this->switchDateString($end->format('Y-m-d')) . ')')
             ->where('domain = "' . $domain . '"')
             ->groupBy('date')
+            ->orderBy('date')
             ->get();
     }
 }
