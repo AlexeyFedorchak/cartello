@@ -4,6 +4,8 @@ namespace App\Console;
 
 use App\Charts\Console\Commands\CacheChartResponses;
 use App\Charts\Console\Commands\CacheDomainList;
+use App\Charts\Console\Commands\CacheSpecificChart;
+use App\Charts\Console\Commands\ChartsList;
 use App\Charts\Models\CachedResponses;
 use App\Sessions\Console\Commands\SyncSessionsWithCloud;
 use Illuminate\Console\Scheduling\Schedule;
@@ -20,6 +22,8 @@ class Kernel extends ConsoleKernel
         SyncSessionsWithCloud::class,
         CacheChartResponses::class,
         CacheDomainList::class,
+        CacheSpecificChart::class,
+        ChartsList::class,
     ];
 
     /**
