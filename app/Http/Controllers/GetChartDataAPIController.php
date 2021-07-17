@@ -21,10 +21,12 @@ class GetChartDataAPIController extends Controller
      */
     public function get(ValidateGetChartDataRequest $request): string
     {
-//        $redisValue = Redis::get($this->getRedisUID($request));
+        if (env('CACHE_RESPONSE', true) === true) {
+            $redisValue = Redis::get($this->getRedisUID($request));
 
-//        if (!empty($redisValue))
-//            return $redisValue;
+            if (!empty($redisValue))
+                return $redisValue;
+        }
 
         $cachedResponsesData = $this->getResponsesOrFail($request);
         $chart = $this->getChartWithTimeRow($request);
@@ -39,7 +41,8 @@ class GetChartDataAPIController extends Controller
         else
             $response = json_encode($response);
 
-//        Redis::set($this->getRedisUID($request), $response, 'EX', 86400);
+        if (env('CACHE_RESPONSE', true) === true)
+            Redis::set($this->getRedisUID($request), $response, 'EX', 86400);
 
         return $response;
     }
