@@ -34,8 +34,14 @@ class ChangeTableDataGrabberV2 implements DataGrabber
     public function rows(): array
     {
         $currentSessions = $this->getYearSessionsForPeriod(
-            now()->subMonths(6), now());
-        $prevSessions = $this->getYearSessionsForPeriod(now()->subMonths(12), now()->subMonths(6));
+            now()->startOfYear(),
+            now()
+        );
+
+        $prevSessions = $this->getYearSessionsForPeriod(
+            now()->subYear()->startOfYear(),
+            now()->subYear()
+        );
 
         $rows = [];
 
