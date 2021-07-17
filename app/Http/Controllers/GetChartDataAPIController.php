@@ -9,6 +9,7 @@ use App\Exceptions\NoCacheFoundForGivenChart;
 use App\Http\Requests\ValidateGetChartDataRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 
 class GetChartDataAPIController extends Controller
 {
@@ -55,11 +56,7 @@ class GetChartDataAPIController extends Controller
      */
     private function getRedisUID(FormRequest $request): string
     {
-        $redisUID = '';
-        foreach ($request->all() as $key => $value)
-            $redisUID .= $key . '-' . json_encode($value);
-
-        return $redisUID;
+        return Str::slug(json_encode($request->all()));
     }
 
     /**
