@@ -71,6 +71,7 @@ class DynamicStructureDataGrabberPages implements DataGrabber
             ->where('date <= CURRENT_DATE()')
             ->where('domain = "' . $domain . '"')
             ->groupBy('date')
+            ->orderBy('date')
             ->get();
     }
 }
