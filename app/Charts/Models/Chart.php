@@ -5,6 +5,17 @@ namespace App\Charts\Models;
 use App\Charts\Constants\ChartPeriods;
 use App\Charts\Constants\ChartTimeFrames;
 use App\Charts\Constants\ChartTypes;
+use App\DataComputers\AVGPositionDataComputer;
+use App\DataComputers\BrandedNonBrandedClicksDataComputer;
+use App\DataComputers\ChangeTableDataComputer;
+use App\DataComputers\CTRChartDataComputer;
+use App\DataComputers\CTRTableChartDataComputer;
+use App\DataComputers\DataComputer;
+use App\DataComputers\DynamicChartDataComputer;
+use App\DataComputers\DynamicStructureDataComputer;
+use App\DataComputers\NonBrandedClicksDataComputer;
+use App\DataComputers\NonBrandedClicksPerDeviceDataComputer;
+use App\DataComputers\OpportunityTableDataComputer;
 use App\DataGrabbers\AVGPositionDynamicChartDataGrabber;
 use App\DataGrabbers\BrandedNonBrandedClicksChartDataGrabber;
 use App\DataGrabbers\ChangeTableDataGrabber;
@@ -57,7 +68,7 @@ class Chart extends Model
      */
     public function generateTimeRow(): void
     {
-        $period = CarbonPeriod::create(now()->subYear(), now());
+        $period = CarbonPeriod::create(now()->startOfYear(), now());
 
         if ($this->period === ChartPeriods::MONTH)
             $period = CarbonPeriod::create(now()->subMonth(), now());
@@ -149,6 +160,46 @@ class Chart extends Model
     }
 
     /**
+     * get computer for processing cached data
+     *
+     * @return DataComputer|null
+     */
+    public function getComputer(): ?DataComputer
+    {
+        if ($this->type === ChartTypes::DYNAMIC_CHART)
+            return new DynamicChartDataComputer();
+
+        if ($this->type === ChartTypes::CHANGE_TABLE)
+            return new ChangeTableDataComputer();
+
+        if ($this->type === ChartTypes::DYNAMIC_STRUCTURE || $this->type === ChartTypes::DYNAMIC_STRUCTURE_PAGE)
+            return new DynamicStructureDataComputer();
+
+        if ($this->type === ChartTypes::OPPORTUNITY_TABLE)
+            return new OpportunityTableDataComputer();
+
+        if ($this->type === ChartTypes::AVG_POSITION)
+            return new AVGPositionDataComputer();
+
+        if ($this->type === ChartTypes::BRANDED_NON_BRANDED_CLICKS)
+            return new BrandedNonBrandedClicksDataComputer();
+
+        if ($this->type === ChartTypes::ORGANIC_CTR)
+            return new CTRChartDataComputer();
+
+        if ($this->type === ChartTypes::ORGANIC_CTR_TABLE_WEEKLY)
+            return new CTRTableChartDataComputer();
+
+        if ($this->type === ChartTypes::NON_BRANDED_CLICKS)
+            return new NonBrandedClicksDataComputer();
+
+        if ($this->type === ChartTypes::NON_BRANDED_CLICKS_PER_DEVICE)
+            return new NonBrandedClicksPerDeviceDataComputer();
+
+        return null;
+    }
+
+    /**
      * get data
      *
      * @return array
@@ -156,6 +207,18 @@ class Chart extends Model
     public function getData(): array
     {
         return $this->getGrabber()->rows();
+    }
+
+    /**
+     * get computed data
+     *
+     * @param array $cachedResponses
+     * @param array $domains
+     * @return array
+     */
+    public function getComputedData(array $cachedResponses, array $domains): array
+    {
+        return $this->getComputer()->compute($cachedResponses, $domains);
     }
 
     /**
