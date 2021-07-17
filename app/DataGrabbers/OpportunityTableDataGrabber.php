@@ -9,10 +9,11 @@ use App\Charts\Models\CachedResponses;
 use App\Charts\Models\Chart;
 use App\Sessions\Traits\ArabicAlphabet;
 use App\Sessions\Traits\BrandSessionsRegex;
+use App\Sessions\Traits\EnglishAlphabet;
 
 class OpportunityTableDataGrabber implements DataGrabber
 {
-    use BrandSessionsRegex, BigQueryTimeFormat, ArabicAlphabet;
+    use BrandSessionsRegex, BigQueryTimeFormat, ArabicAlphabet, EnglishAlphabet;
     /**
      * chart instance
      *
@@ -89,16 +90,39 @@ class OpportunityTableDataGrabber implements DataGrabber
 
         $query->closeGroupCondition();
 
-        $query->openGroupCondition();
+        if ($isArabic) {
+            //include arabic chars
+            $query->openGroupCondition();
 
-        if ($isArabic)
             foreach ($this->getArabicChars() as $char)
                 $query->where('query like "%' . $char . '%"', 'OR');
-        else
+
+            $query->closeGroupCondition();
+
+            //exclude english chars
+            $query->openGroupCondition();
+
+            foreach ($this->getEnglishChars() as $char)
+                $query->where('query not like "%' . $char . '%"', 'OR');
+
+            $query->closeGroupCondition();
+        } else {
+            //exclude arabic chars
+            $query->openGroupCondition();
+
             foreach ($this->getArabicChars() as $char)
                 $query->where('query not like "%' . $char . '%"', 'AND');
 
-        $query->closeGroupCondition();
+            $query->closeGroupCondition();
+
+            //include english chars
+            $query->openGroupCondition();
+
+            foreach ($this->getEnglishChars() as $char)
+                $query->where('query like "%' . $char . '%"', 'AND');
+
+            $query->closeGroupCondition();
+        }
 
         return $query->groupBy('query')
             ->orderBy('opportunities DESC')
