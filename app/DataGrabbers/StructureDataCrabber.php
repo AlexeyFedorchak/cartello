@@ -43,7 +43,7 @@ class StructureDataCrabber implements DataGrabber
                 ->pluck('count_clicks')
                 ->sum();
 
-            $total = $count_1_3 + $count_4_7 + $count_4_7;
+            $total = $count_1_3 + $count_4_7 + $count_8_10;
 
             $rows[$domain->domain] = [
                 'count_1_3' => round(($count_1_3 / $total) * 100, 1),
@@ -60,6 +60,8 @@ class StructureDataCrabber implements DataGrabber
             ], [
                 'response' => json_encode($rows[$domain->domain]),
             ]);
+
+            echo "Processed: " . $domain->domain . "\r\n";
         }
 
         return $rows;
