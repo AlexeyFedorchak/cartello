@@ -18,7 +18,7 @@ class ChangeTableDataComputer implements DataComputer
         $data = [];
 
         $months = [];
-        $period = CarbonPeriod::create(now()->subMonths(6), now());
+        $period = CarbonPeriod::create(now()->subMonths(7), now());
 
         foreach ($period as $item)
             $months[] = $item->format('M');
