@@ -24,7 +24,9 @@ class ValidateGetChartFilterOptionsRequest extends FormRequest
     public function rules()
     {
         return [
-            'chart_id' => 'required|numeric|exists:filter_options,chart_id'
+            'chart_id' => 'required|numeric|exists:filter_options,chart_id',
+            'domains' => 'required|array',
+            'domains.*' => 'required|string|max:255|exists:cashed_domain_list,domain',
         ];
     }
 }
