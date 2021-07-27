@@ -26,7 +26,7 @@ class ValidateGetChartFilterOptionsRequest extends FormRequest
         return [
             'chart_id' => 'required|numeric|exists:filter_options,chart_id',
             'domains' => 'required|array',
-            'domains.*' => 'required|string|max:255|exists:cashed_domain_list,domain',
+            'domains.*' => 'required|string',
         ];
     }
 }
