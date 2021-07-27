@@ -15,10 +15,12 @@ class GetChartFilterOptionsAPIController extends Controller
      */
     public function get(ValidateGetChartFilterOptionsRequest $request): array
     {
+        $domains = explode(',', str_replace(['[', ']', '"', '"'], '', ($request->domains[0])));
+
         $filterOptions = FilterOption::where($request->only('chart_id'))
-            ->where(function ($query) use ($request) {
-                if (!empty($request->domains))
-                    $query->whereIn('domain', $request->domains);
+            ->where(function ($query) use ($domains) {
+                if (is_array($domains) && count($domains) > 0)
+                    $query->whereIn('domain', $domains);
             })
             ->get();
 
