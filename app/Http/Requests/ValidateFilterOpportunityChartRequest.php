@@ -35,7 +35,7 @@ class ValidateFilterOpportunityChartRequest extends FormRequest
             'filters.min_opportunities' => 'required|numeric|min:0',
             'filters.min_position' => 'required|numeric|min:1',
             'domains' => 'required|array',
-            'domains.*' => 'required|string|max:255|exists:cashed_domain_list,domain',
+            'domains.*' => 'required|string',
             'page' => 'required|numeric',
             'sort_by' => 'sometimes|nullable|string',
             'direction' => 'sometimes|nullable|string|min:3|max:4',
