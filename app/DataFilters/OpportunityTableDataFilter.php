@@ -154,77 +154,91 @@ class OpportunityTableDataFilter implements DataFilter
     public function cacheFilterOptions(): void
     {
         foreach (CachedDomainList::all() as $domain) {
-            $query = app(IClient::class)
-                ->select(ChartTable::CHART_TABLE, [
-                    'SUM(clicks) as clicks',
-                    'SUM(impressions) as impressions',
-                    'AVG(position) as position',
-                    'SAFE_SUBTRACT(SUM(impressions), SUM(clicks)) as opportunities',
-                    'query',
-                ])
-                ->where('date <= CURRENT_DATE()')
-                ->where('domain = "' . $domain->domain . '"')
-                ->where('position >= ' . $this->getLowPosition())
-                ->where('position <= ' . $this->getHighPosition());
+            $clicks = $this->getMaxOptions('SUM(clicks)', $domain->domain);
+            $impressions = $this->getMaxOptions('SUM(impressions)', $domain->domain);
+            $opportunities = $this->getMaxOptions('SAFE_SUBTRACT(SUM(impressions), SUM(clicks))', $domain->domain);
 
-            $query->openGroupCondition();
-            foreach ($this->brandKeywords() as $keyword)
-                $query->where('query not like "%' . $keyword . '%"', 'AND');
-
-            $query->closeGroupCondition();
-
-            if (strpos($this->chart->source_columns, 'arabic') !== false) {
-                //include arabic chars
-                $query->openGroupCondition();
-
-                foreach ($this->getArabicChars() as $char)
-                    $query->where('query like "%' . $char . '%"', 'OR');
-
-                $query->closeGroupCondition();
-
-                //exclude english chars
-                $query->openGroupCondition();
-
-                foreach ($this->getEnglishChars() as $char)
-                    $query->where('query not like "%' . $char . '%"', 'AND');
-
-                $query->closeGroupCondition();
-            } else {
-                //exclude arabic chars
-                $query->openGroupCondition();
-
-                foreach ($this->getArabicChars() as $char)
-                    $query->where('query not like "%' . $char . '%"', 'AND');
-
-                $query->closeGroupCondition();
-
-                //include english chars
-                $query->openGroupCondition();
-
-                foreach ($this->getEnglishChars() as $char)
-                    $query->where('query like "%' . $char . '%"', 'OR');
-
-                $query->closeGroupCondition();
-            }
-
-            $query->groupBy('query');
-
-            $items = $query->get();
+            $count = $this->getMaxOptions('COUNT(*)', $domain->domain);
 
             $filterOptions = [
-                'total' => count($items),
-                'total_pages' => count($items) / $this->perPage,
+                'total' => $count['value'],
+                'total_pages' => $count['value'] / $this->perPage,
                 'per_page' => $this->perPage,
-                'max_clicks' => collect($items)->pluck('clicks')->max(),
-                'max_impressions' => collect($items)->pluck('impressions')->max(),
+                'max_clicks' => $clicks['value'],
+                'max_impressions' => $impressions['value'],
                 'max_position' => $this->getHighPosition(),
-                'max_opportunities' => collect($items)->pluck('opportunities')->max(),
+                'max_opportunities' => $opportunities['value'],
             ];
 
             FilterOption::updateOrCreate(['chart_id' => $this->chart->id, 'domain' => $domain->domain], [
                 'options' => json_encode($filterOptions),
             ]);
         }
+    }
+
+    /**
+     * get max options -> without after processing data
+     *
+     * @param string $identifier
+     * @param string $domain
+     * @return array|null
+     */
+    private function getMaxOptions(string $identifier, string $domain): ?array
+    {
+        $query = app(IClient::class)
+            ->select(ChartTable::CHART_TABLE, [
+                $identifier . ' as value',
+                'query',
+            ])
+            ->where('date <= CURRENT_DATE()')
+            ->where('domain = "' . $domain . '"')
+            ->where('position >= ' . $this->getLowPosition())
+            ->where('position <= ' . $this->getHighPosition());
+
+        $query->openGroupCondition();
+        foreach ($this->brandKeywords() as $keyword)
+            $query->where('query not like "%' . $keyword . '%"', 'AND');
+
+        $query->closeGroupCondition();
+
+        if (strpos($this->chart->source_columns, 'arabic') !== false) {
+            //include arabic chars
+            $query->openGroupCondition();
+
+            foreach ($this->getArabicChars() as $char)
+                $query->where('query like "%' . $char . '%"', 'OR');
+
+            $query->closeGroupCondition();
+
+            //exclude english chars
+            $query->openGroupCondition();
+
+            foreach ($this->getEnglishChars() as $char)
+                $query->where('query not like "%' . $char . '%"', 'AND');
+
+            $query->closeGroupCondition();
+        } else {
+            //exclude arabic chars
+            $query->openGroupCondition();
+
+            foreach ($this->getArabicChars() as $char)
+                $query->where('query not like "%' . $char . '%"', 'AND');
+
+            $query->closeGroupCondition();
+
+            //include english chars
+            $query->openGroupCondition();
+
+            foreach ($this->getEnglishChars() as $char)
+                $query->where('query like "%' . $char . '%"', 'OR');
+
+            $query->closeGroupCondition();
+        }
+
+        $query->groupBy('query');
+        $query->orderBy('value DESC');
+
+        return $query->get()[0] ?? null;
     }
 
     /**

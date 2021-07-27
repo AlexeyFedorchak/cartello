@@ -6,6 +6,7 @@ use App\Charts\Console\Commands\CacheChartResponses;
 use App\Charts\Console\Commands\CacheDomainList;
 use App\Charts\Console\Commands\CacheFilterOptions;
 use App\Charts\Console\Commands\CacheSpecificChart;
+use App\Charts\Console\Commands\CacheSpecificChartFilterOptions;
 use App\Charts\Console\Commands\ChartsList;
 use App\Charts\Models\CachedResponses;
 use App\Sessions\Console\Commands\SyncSessionsWithCloud;
@@ -26,6 +27,7 @@ class Kernel extends ConsoleKernel
         CacheSpecificChart::class,
         ChartsList::class,
         CacheFilterOptions::class,
+        CacheSpecificChartFilterOptions::class,
     ];
 
     /**
