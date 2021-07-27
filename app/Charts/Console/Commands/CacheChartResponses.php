@@ -28,7 +28,7 @@ class CacheChartResponses extends Command
      */
     public function handle()
     {
-        shell_exec('export GOOGLE_APPLICATION_CREDENTIALS="/home/forge/edgytech.space/normandy-api-d4370f73211d.json"');
+        putenv('GOOGLE_APPLICATION_CREDENTIALS=' . env('GOOGLE_APPLICATION_CREDENTIALS'));
 
         foreach (Chart::all() as $chart) {
             $this->info('Processing chart: ' . $chart->id);

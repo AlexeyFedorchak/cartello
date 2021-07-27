@@ -17,15 +17,15 @@ use App\DataComputers\DynamicStructureDataComputer;
 use App\DataComputers\NonBrandedClicksDataComputer;
 use App\DataComputers\NonBrandedClicksPerDeviceDataComputer;
 use App\DataComputers\OpportunityTableDataComputer;
+use App\DataFilters\DataFilter;
+use App\DataFilters\OpportunityTableDataFilter;
 use App\DataGrabbers\AVGPositionDynamicChartDataGrabber;
 use App\DataGrabbers\BrandedNonBrandedClicksChartDataGrabber;
-use App\DataGrabbers\ChangeTableDataGrabber;
 use App\DataGrabbers\ChangeTableDataGrabberV2;
 use App\DataGrabbers\ChangeTablePerDomainDataGrabber;
 use App\DataGrabbers\DataGrabber;
 use App\DataGrabbers\DynamicChartDataGrabber;
 use App\DataGrabbers\DynamicChartDataGrabberV2;
-use App\DataGrabbers\DynamicStructureDataGrabber;
 use App\DataGrabbers\DynamicStructureDataGrabberPages;
 use App\DataGrabbers\DynamicStructureDataGrabberV2;
 use App\DataGrabbers\NonBrandedClicksDataGrabber;
@@ -230,5 +230,28 @@ class Chart extends Model
     public function getCachedResponses(): HasMany
     {
         return $this->hasMany(CachedResponses::class, 'chart_id', 'id');
+    }
+
+    /**
+     * get filter to process filtered data
+     *
+     * @return DataFilter|null
+     */
+    public function getFilter(): ?DataFilter
+    {
+        if ($this->type === ChartTypes::OPPORTUNITY_TABLE)
+            return new OpportunityTableDataFilter($this);
+
+        return null;
+    }
+
+    /**
+     * get filter options
+     *
+     * @return HasMany
+     */
+    public function filterOptions(): HasMany
+    {
+        return $this->hasMany(FilterOption::class, 'chart_id', 'id');
     }
 }

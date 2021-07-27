@@ -5,14 +5,14 @@ namespace App\Charts\Console\Commands;
 use App\Charts\Models\Chart;
 use Illuminate\Console\Command;
 
-class CacheSpecificChart extends Command
+class CacheFilterOptions extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'cache:chart';
+    protected $signature = 'cache:filter-options';
 
     /**
      * The console command description.
@@ -30,21 +30,15 @@ class CacheSpecificChart extends Command
     {
         putenv('GOOGLE_APPLICATION_CREDENTIALS=' . env('GOOGLE_APPLICATION_CREDENTIALS'));
 
-        $chartId = $this->ask('Chart id?');
-        $chart = Chart::where('id', $chartId)->first();
+        foreach (Chart::all() as $chart) {
+            $this->info('Processing chart: ' . $chart->id);
 
-        if (!$chart) {
-            $this->error('No charts found!');
-            die();
-        }
-
-        $this->info('Processing chart: ' . $chart->slug);
-
-        try {
-            $chart->getData();
-            $this->info('Done: ' . $chart->id);
-        } catch (\Throwable $e) {
-            $this->error('Error with processing: ' . $chart->id . ' [' . $e->getMessage() . ']');
+            try {
+                $chart->getFilter()->cacheFilterOptions();
+                $this->info('Done: ' . $chart->id);
+            } catch (\Throwable $e) {
+                $this->error('Error with processing: ' . $chart->id . ' [' . $e->getMessage() . ']');
+            }
         }
     }
 }

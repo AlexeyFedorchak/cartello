@@ -32,7 +32,7 @@ class CacheDomainList extends Command
      */
     public function handle()
     {
-        shell_exec('export GOOGLE_APPLICATION_CREDENTIALS="/home/forge/edgytech.space/normandy-api-d4370f73211d.json"');
+        putenv('GOOGLE_APPLICATION_CREDENTIALS=' . env('GOOGLE_APPLICATION_CREDENTIALS'));
 
         $domains = app(IClient::class)
             ->select('searchanalytics', ['SUM(clicks) as clicks', 'domain'])

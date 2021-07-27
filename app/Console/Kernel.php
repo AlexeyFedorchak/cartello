@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Charts\Console\Commands\CacheChartResponses;
 use App\Charts\Console\Commands\CacheDomainList;
+use App\Charts\Console\Commands\CacheFilterOptions;
 use App\Charts\Console\Commands\CacheSpecificChart;
 use App\Charts\Console\Commands\ChartsList;
 use App\Charts\Models\CachedResponses;
@@ -24,6 +25,7 @@ class Kernel extends ConsoleKernel
         CacheDomainList::class,
         CacheSpecificChart::class,
         ChartsList::class,
+        CacheFilterOptions::class,
     ];
 
     /**
@@ -43,6 +45,10 @@ class Kernel extends ConsoleKernel
             ->daily();
 
         $schedule->command('cache:domains')
+            ->withoutOverlapping()
+            ->daily();
+
+        $schedule->command('cache:filter-options')
             ->withoutOverlapping()
             ->daily();
     }
