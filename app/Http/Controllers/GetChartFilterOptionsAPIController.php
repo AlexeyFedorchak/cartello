@@ -18,7 +18,7 @@ class GetChartFilterOptionsAPIController extends Controller
         $filterOptions = FilterOption::where($request->only('chart_id'))
             ->where(function ($query) use ($request) {
                 if (!empty($request->domains))
-                    $query->whereIn($request->domains);
+                    $query->whereIn('domain', $request->domains);
             })
             ->get();
 
