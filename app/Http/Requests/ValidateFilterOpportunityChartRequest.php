@@ -25,11 +25,16 @@ class ValidateFilterOpportunityChartRequest extends FormRequest
     {
         return [
             'id' => 'required|numeric|exists:charts,id',
-//            'max_clicks' => 'required|numeric',
-//            'max_impressions' => 'required|numeric',
-//            'max_opportunities' => 'required|numeric',
-//            'max_positions' => 'required|numeric',
-//            'sort_by' => 'required|string',
+            'filters' => 'required|array',
+            'filters.clicks' => 'required|numeric',
+            'filters.impressions' => 'required|numeric',
+            'filters.opportunities' => 'required|numeric',
+            'filters.position' => 'required|numeric',
+            'domains' => 'required|array',
+            'domains.*' => 'required|string|max:255|exists:cashed_domain_list,domain',
+            'page' => 'required|numeric',
+            'sort_by' => 'sometimes|nullable|string',
         ];
     }
+    //http://localhost/api/opportunity-chart/filter?id=77&domains[]=https://ar-kuwait.namshi.com/&filters[clicks]=250&filters[impressions]=250000&filters[opportunities]=2500000&filters[position]=20&page=1
 }

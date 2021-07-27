@@ -25,7 +25,7 @@ class OpportunityTableDataFilter implements DataFilter
      *
      * @var int
      */
-    protected $perPage = 50;
+    protected $perPage = 20;
 
     public function __construct(Chart $chart)
     {
@@ -41,34 +41,21 @@ class OpportunityTableDataFilter implements DataFilter
      * @param string $sortBy
      * @return array
      */
-    public function filterAndSort(int $page, array $filters = [], array $domains = [], string $sortBy = 'impressions'): array
+    public function filterAndSort(int $page, array $filters = [], array $domains = [], string $sortBy = 'opportunities'): array
     {
         $query = app(IClient::class)
             ->select(ChartTable::CHART_TABLE, [
-                'SUM(clicks) as clicks',
-                'SUM(impressions) as impressions',
-                'AVG(position) as position',
-                'SAFE_SUBTRACT(SUM(impressions), SUM(clicks)) as opportunities',
+                'SUM(clicks) as sum_clicks',
+                'SUM(impressions) as sum_impressions',
+                'AVG(position) as sum_position',
+                'SAFE_SUBTRACT(SUM(impressions), SUM(clicks)) as sum_opportunities',
                 'query',
             ])
             ->where('position >= ' . $this->getLowPosition())
-            ->where('position <= ' . $this->getHighPosition())
             ->where('date <= CURRENT_DATE()');
 
         if (count($domains) > 0)
-            $query->where('domain in (' . implode(',', $domains) . ')');
-
-        if (!empty($filters['clicks']) && is_numeric($filters['clicks']))
-            $query->where('clicks <= ' . $filters['clicks']);
-
-        if (!empty($filters['opportunities']) && is_numeric($filters['opportunities']))
-            $query->where('opportunities <= ' . $filters['opportunities']);
-
-        if (!empty($filters['impressions']) && is_numeric($filters['impressions']))
-            $query->where('impressions <= ' . $filters['impressions']);
-
-        if (!empty($filters['position']) && is_numeric($filters['position']))
-            $query->where('position <= ' . $filters['position']);
+            $query->where('domain in (' . $this->getDomainList($domains) . ')');
 
         $query->openGroupCondition();
         foreach ($this->brandKeywords() as $keyword)
@@ -112,6 +99,21 @@ class OpportunityTableDataFilter implements DataFilter
 
         $query->groupBy('query');
 
+        if (!empty($filters['clicks']) && is_numeric($filters['clicks']))
+            $query->having('sum_clicks <= ' . $filters['clicks']);
+
+        if (!empty($filters['opportunities']) && is_numeric($filters['opportunities']))
+            $query->having('sum_opportunities <= ' . $filters['opportunities']);
+
+        if (!empty($filters['impressions']) && is_numeric($filters['impressions']))
+            $query->having('sum_impressions <= ' . $filters['impressions']);
+
+        if (!empty($filters['position']) && is_numeric($filters['position']))
+            $query->having('sum_position <= ' . $filters['position']);
+
+        if ($sortBy === 'opportunities')
+            $query->orderBy('sum_opportunities DESC');
+
         if ($sortBy === 'impressions')
             $query->orderBy('impressions DESC');
 
@@ -126,6 +128,22 @@ class OpportunityTableDataFilter implements DataFilter
 
         return $query->limit($this->perPage, ($page - 1) * $this->perPage)
             ->get();
+    }
+
+    /**
+     * get domain list
+     *
+     * @param array $domains
+     * @return string
+     */
+    private function getDomainList(array $domains): string
+    {
+        return implode(
+            ',',
+            array_map(function ($domain) {
+                return '"' . $domain . '"';
+            }, $domains)
+        );
     }
 
     /**

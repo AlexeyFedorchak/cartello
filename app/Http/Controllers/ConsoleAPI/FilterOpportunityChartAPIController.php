@@ -12,7 +12,11 @@ class FilterOpportunityChartAPIController extends ConsoleAPIController
         $chart = Chart::where($request->only('id'))
             ->first();
 
-        dd($chart->getFilter()->getFilterAndPaginationSettings());
-
+        return $chart->getFilter()->filterAndSort(
+            $request->page,
+            $request->filters,
+            $request->domains,
+            !empty($request->sortBy) ? $request->sortBy : 'opportunities',
+        );
     }
 }

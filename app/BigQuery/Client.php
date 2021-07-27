@@ -74,6 +74,29 @@ class Client implements IClient
     }
 
     /**
+     * having condition
+     *
+     * @param string $where
+     * @param string $condition
+     * @return $this
+     */
+    public function having(string $where, string $condition = 'AND'): IClient
+    {
+        $where = str_replace('having', '', $where);
+
+        if (substr($this->query, -1) === '(')
+            $condition = '';
+
+        if (strpos($this->query, 'having') !== false) {
+            $this->query .= ' ' . $condition . ' ' . $where;
+        } else {
+            $this->query .= ' having ' . $where;
+        }
+
+        return $this;
+    }
+
+    /**
      * set sort order in query -> make it simple from our side and move work to big query :)
      *
      * @param string $order
