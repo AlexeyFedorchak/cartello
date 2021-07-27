@@ -17,6 +17,7 @@ class FilterOpportunityChartAPIController extends ConsoleAPIController
             $request->filters,
             $request->domains,
             !empty($request->sortBy) ? $request->sortBy : 'opportunities',
+            !empty($request->direction) ? $request->direction : 'desc',
         );
     }
 }

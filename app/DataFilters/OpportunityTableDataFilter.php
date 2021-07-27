@@ -39,9 +39,10 @@ class OpportunityTableDataFilter implements DataFilter
      * @param array $filters
      * @param array $domains
      * @param string $sortBy
+     * @param string $direction
      * @return array
      */
-    public function filterAndSort(int $page, array $filters = [], array $domains = [], string $sortBy = 'opportunities'): array
+    public function filterAndSort(int $page, array $filters = [], array $domains = [], string $sortBy = 'opportunities', string $direction = 'desc'): array
     {
         $query = app(IClient::class)
             ->select(ChartTable::CHART_TABLE, [
@@ -99,32 +100,52 @@ class OpportunityTableDataFilter implements DataFilter
 
         $query->groupBy('query');
 
-        if (!empty($filters['clicks']) && is_numeric($filters['clicks']))
-            $query->having('sum_clicks <= ' . $filters['clicks']);
+        //by max values
+        if (!empty($filters['max_clicks']) && is_numeric($filters['max_clicks']))
+            $query->having('sum_clicks <= ' . $filters['max_clicks']);
 
-        if (!empty($filters['opportunities']) && is_numeric($filters['opportunities']))
-            $query->having('sum_opportunities <= ' . $filters['opportunities']);
+        if (!empty($filters['max_opportunities']) && is_numeric($filters['max_opportunities']))
+            $query->having('sum_opportunities <= ' . $filters['max_opportunities']);
 
-        if (!empty($filters['impressions']) && is_numeric($filters['impressions']))
-            $query->having('sum_impressions <= ' . $filters['impressions']);
+        if (!empty($filters['max_impressions']) && is_numeric($filters['max_impressions']))
+            $query->having('sum_impressions <= ' . $filters['max_impressions']);
 
-        if (!empty($filters['position']) && is_numeric($filters['position']))
-            $query->having('sum_position <= ' . $filters['position']);
+        if (!empty($filters['max_position']) && is_numeric($filters['max_position']))
+            $query->having('sum_position <= ' . $filters['max_position']);
+
+        // by min values
+        if (!empty($filters['min_clicks']) && is_numeric($filters['min_clicks']))
+            $query->having('sum_clicks >= ' . $filters['min_clicks']);
+
+        if (!empty($filters['min_opportunities']) && is_numeric($filters['min_opportunities']))
+            $query->having('sum_opportunities >= ' . $filters['min_opportunities']);
+
+        if (!empty($filters['min_impressions']) && is_numeric($filters['min_impressions']))
+            $query->having('sum_impressions >= ' . $filters['min_impressions']);
+
+        if (!empty($filters['min_position']) && is_numeric($filters['min_position']))
+            $query->having('sum_position >= ' . $filters['min_position']);
+
+        if (empty($sortBy))
+            $sortBy = 'opportunities';
+
+        if (empty($direction))
+            $direction = 'desc';
 
         if ($sortBy === 'opportunities')
-            $query->orderBy('sum_opportunities DESC');
+            $query->orderBy('sum_opportunities ' . $direction);
 
         if ($sortBy === 'impressions')
-            $query->orderBy('impressions DESC');
+            $query->orderBy('impressions ' . $direction);
 
         if ($sortBy === 'clicks')
-            $query->orderBy('clicks DESC');
+            $query->orderBy('clicks ' . $direction);
 
         if ($sortBy === 'position')
-            $query->orderBy('position DESC');
+            $query->orderBy('position ' . $direction);
 
         if ($sortBy === 'query')
-            $query->orderBy('query DESC');
+            $query->orderBy('query ' . $direction);
 
         return $query->limit($this->perPage, ($page - 1) * $this->perPage)
             ->get();
